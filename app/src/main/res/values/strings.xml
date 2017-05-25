@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">BakingApp</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+
+    <string name="crash_dialog_text">crash dialog</string>
+    <string name="crash_dialog_title">Crash Report</string>
+    <string name="crash_dialog_comment_prompt">Confirm</string>
+    <string name="crash_dialog_ok_toast">OK toast</string>
+    <string name="add_stock">Add Stock</string>
+    <string name="add_stock_dialog_edittext">Enter Symbol</string>
+    <string name="title_activity_graph">Graph</string>
+    <string name="empty_view_text">No item to display</string>
+    <string name="loading">Loading Stock</string>
+    <string name="ok">OK</string>
+    <string name="error_dialog_title">Error</string>
+    <string name="error_dialog_text">Error occurred while adding the following symbol(s):</string>
+    <string name="title_activity_home">Home</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="next_button_content_desc">Next</string>
+    <string name="prev_button_content_desc">Previous</string>
+
+    <string name="wel_skip">Skip</string>
+    <string name="wel_done">Done</string>
+
+</resources>
