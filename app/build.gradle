@@ -28,9 +28,9 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.4'
 
-
-    compile 'com.google.android.exoplayer:exoplayer:r2.4.1'
+    compile 'com.google.android.exoplayer:exoplayer-core:r2.4.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'

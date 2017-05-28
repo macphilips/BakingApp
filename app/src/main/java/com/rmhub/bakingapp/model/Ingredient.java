@@ -17,7 +17,8 @@ import java.util.List;
  * .
  */
 
-class Ingredient implements Parcelable {
+public class Ingredient implements Parcelable {
+
     public static final Creator<Ingredient> CREATOR = new Creator<Ingredient>() {
         @Override
         public Ingredient createFromParcel(Parcel in) {
@@ -30,10 +31,6 @@ class Ingredient implements Parcelable {
         }
     };
 
-    @SerializedName("quantity")
-    @Expose
-    private int quantity;
-
     @SerializedName("measure")
     @Expose
     private String measure;
@@ -45,8 +42,12 @@ class Ingredient implements Parcelable {
     public Ingredient() {
     }
 
+    @SerializedName("quantity")
+    @Expose
+    private double quantity;
+
     protected Ingredient(Parcel in) {
-        quantity = in.readInt();
+        quantity = in.readDouble();
         measure = in.readString();
         ingredient = in.readString();
     }
@@ -56,8 +57,8 @@ class Ingredient implements Parcelable {
         }.getType());
     }
 
-    public int getQuantity() {
-        return quantity;
+    public String getQuantity() {
+        return String.valueOf(quantity);
     }
 
     public void setQuantity(int quantity) {
@@ -81,14 +82,14 @@ class Ingredient implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(quantity);
-        dest.writeString(measure);
-        dest.writeString(ingredient);
+    public int describeContents() {
+        return 0;
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeDouble(quantity);
+        dest.writeString(measure);
+        dest.writeString(ingredient);
     }
 }

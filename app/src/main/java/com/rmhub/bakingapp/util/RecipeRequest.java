@@ -53,7 +53,6 @@ public class RecipeRequest extends Request<List<Recipe>> {
 
     public static class MovieRequestListener implements Response.Listener<List<Recipe>>, Response.ErrorListener {
 
-
         @Override
         public void onErrorResponse(VolleyError error) {
 
@@ -64,9 +63,7 @@ public class RecipeRequest extends Request<List<Recipe>> {
 
         }
 
-        public void onNetworkError() {
 
-        }
     }
 
 }

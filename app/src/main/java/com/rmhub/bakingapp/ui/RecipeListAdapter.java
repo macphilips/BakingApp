@@ -21,19 +21,19 @@ import butterknife.ButterKnife;
  * .
  */
 
-public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
+class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
 
     private List<Recipe> mValues;
     private View.OnClickListener listener;
 
-    public RecipeListAdapter() {
+    RecipeListAdapter() {
     }
 
-    public void setListener(View.OnClickListener listener) {
+    void setListener(View.OnClickListener listener) {
         this.listener = listener;
     }
 
-    public void setRecipeList(List<Recipe> list) {
+    void setRecipeList(List<Recipe> list) {
         mValues = list;
         notifyDataSetChanged();
     }
@@ -57,16 +57,15 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return (mValues == null) ? 0 : mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public Recipe mItem;
-        public View container;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        View container;
         @BindView(R.id.recipe_name)
         TextView recipe_name;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             container = view;
 
