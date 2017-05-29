@@ -105,7 +105,6 @@ public class RecipeStepFragment extends Fragment {
 
     @OnClick(R.id.button_prev)
     void previous() {
-        hideOrShowPreviousButton(mCurrentStep);
         prevButtonClicked(mCurrentStep);
     }
 
@@ -164,6 +163,8 @@ public class RecipeStepFragment extends Fragment {
         fragmentTransaction.commit();
         mCurrentStep = step;
         updateIndicator();
+        hideOrShowPreviousButton(mCurrentStep);
+        hideOrShowNextButton(mCurrentStep);
     }
 
     public boolean canScrollToNextStep(Step mStep) {
