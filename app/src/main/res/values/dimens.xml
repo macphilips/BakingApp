@@ -41,4 +41,7 @@
     <dimen name="wel_flat_button_vertical_margin">4dp</dimen>
     <dimen name="wel_flat_button_horizontal_margin">8dp</dimen>
     <dimen name="wel_title_text_size">26sp</dimen>
+    <dimen name="image_width_size">0dp</dimen>
+    <dimen name="image_padding">0dp</dimen>
+    <dimen name="video_player_height">200dp</dimen>
 </resources>

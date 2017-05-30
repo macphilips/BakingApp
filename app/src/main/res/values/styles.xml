@@ -13,66 +13,19 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="FullscreenTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.Dialog" parent="Theme.AppCompat" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <!--
-        <style name="WelcomeScreenTheme" parent="Wel_WelcomeScreenBaseTheme">
-            <item name="windowNoTitle">true</item>
-            <item name="windowActionBar">false</item>
-            <item name="welcomeLayoutFitsSystemWindows">true</item>
-            <item name="android:textColorPrimary">@color/wel_text_primary_theme_dark</item>
-            <item name="android:textColorSecondary">@color/wel_text_primary_theme_dark</item>
-            <item name="welcomeButtonBackground">@drawable/wel_button_borderless_background</item>
-            <item name="welcomeButtonNextStyle">@style/WelcomeScreenButton.Next</item>
-            <item name="welcomeButtonPrevStyle">@style/WelcomeScreenButton.Prev</item>
-            <item name="welcomeButtonDoneStyle">@style/WelcomeScreenButton.Done</item>
-            <item name="welcomeButtonDoneText">@string/wel_done</item>
-            <item name="welcomeButtonSkipText">@string/wel_skip</item>
-
-
-            <item name="welcomeDividerStyle">@style/WelcomeScreenDivider</item>
-
-            <item name="welcomeNormalTextStyle">@style/WelcomeScreenText</item>
-            <item name="welcomeLargeTextStyle">@style/WelcomeScreenText.Large</item>
-            <item name="welcomeTitleTextStyle">@style/WelcomeScreenText.Title.Centered</item>
-
-            <item name="windowActionBarOverlay">true</item>
-            <item name="actionBarStyle">@style/Wel_TransparentActionBar</item>
-
-          // Make the background transparent, so swipeToDismiss will fade to the activity beneath
-            <item name="android:backgroundDimEnabled">false</item>
-            <item name="android:background">@color/wel_transparent</item>
-            <item name="background">@color/wel_transparent</item>
-            <item name="android:windowBackground">@color/wel_transparent</item>
-            <item name="android:windowIsTranslucent">true</item>
-        </style>
-
-        <style name="Wel_WelcomeScreenBaseTheme" parent="Theme.AppCompat.NoActionBar" />
-        <style name="WelcomeScreenTheme.Light">
-            <item name="android:textColorPrimary">@color/wel_text_primary_theme_light</item>
-            <item name="android:textColorSecondary">@color/wel_text_primary_theme_light</item>
-            <item name="welcomeButtonBackground">
-                @drawable/wel_button_borderless_background_theme_light
-            </item>
-        </style>
-        <style name="WelcomeScreenTheme.SolidNavigation">
-           //See values-v19
-    </style>
-
-    <style name="WelcomeScreenTheme.Light.SolidNavigation">
-    </style>
-
-    <style name="WelcomeScreenTheme.SolidNavigation.UnderStatusBar">
-    </style>
-
-    <style name="WelcomeScreenTheme.Light.SolidNavigation.UnderStatusBar">
-    </style>
-        -->
-
 
     <style name="RecipeDetailButton.Done">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
@@ -144,6 +97,11 @@
 
     <style name="WelcomeScreenText.Title.Centered">
         <item name="android:gravity">center_horizontal</item>
+
+    </style>
+
+    <style name="WelcomeScreenText.Large.Retry">
+        <item name="android:text">@string/retry</item>
     </style>
 
     <style name="Wel_TextContainer">
@@ -198,4 +156,31 @@
         <item name="android:src">@drawable/exo_controls_pause</item>
         <item name="android:contentDescription">@string/exo_controls_pause_description</item>
     </style>
+
+    <style name="ExoMediaButton.ExitFullScreen">
+        <item name="android:src">@drawable/ic_fullscreenexit</item>
+        <item name="android:contentDescription">@string/exo_controls_exit_fullscreen_description
+        </item>
+    </style>
+
+    <style name="ExoMediaButton.FullScreen">
+        <item name="android:src">@drawable/ic_fullscreen</item>
+        <item name="android:contentDescription">@string/exo_controls_fullscreen_description</item>
+    </style>
+
+    <style name="ExoMediaButton.More">
+        <item name="android:src">@drawable/ic_more</item>
+        <item name="android:contentDescription">@string/exo_more_description</item>
+    </style>
+
+    <style name="ExoMediaButton.Retry">
+        <item name="android:src">@drawable/ic_retry_01</item>
+        <item name="android:contentDescription">@string/exo_retry_description</item></style>
+
+    <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
+    </style>
+
+
+
 </resources>

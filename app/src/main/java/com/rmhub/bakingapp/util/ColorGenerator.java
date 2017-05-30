@@ -39,6 +39,7 @@ public class ColorGenerator {
                 0xffffd54f,
                 0xffffb74d,
                 0xffa1887f,
+                0xff00838f,
                 0xff90a4ae
         ));
     }

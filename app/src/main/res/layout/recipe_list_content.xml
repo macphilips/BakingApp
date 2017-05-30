@@ -7,59 +7,31 @@
     android:layout_marginTop="10dp"
     app:cardCornerRadius="5dp">
 
-    <TextView
-        android:id="@+id/recipe_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_weight="0.1"
-        android:gravity="center"
-        android:textColor="?android:attr/textColorSecondary"
-        android:textSize="18sp"
-        tools:text="RecipeName" />
-    <!--<LinearLayout
+    <LinearLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:orientation="vertical"
-         android:weightSum="1">
+        android:orientation="vertical">
 
-         <LinearLayout
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:layout_weight="0.9"
-             android:orientation="vertical"            >
+        <ImageView
+            android:id="@+id/recipe_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/material_cyan"
+            android:contentDescription="@string/recipe_name"
+            app:srcCompat="@drawable/ic_picture" />
 
-             <TextView
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_gravity="center"
-                 android:layout_marginTop="10dp"
-                 tools:text="Ingredients" />
-
-             <TextView
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_gravity="center"
-                 android:layout_marginTop="10dp"
-                 tools:text="Ingredients" />
-
-             <TextView
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_gravity="center"
-                 android:layout_marginTop="10dp"
-                 tools:text="Ingredients" />
-
-             <TextView
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_gravity="center"
-                 android:layout_margin="10dp"
-                 tools:text="Ingredients" />
-         </LinearLayout>
+        <TextView
+            android:id="@+id/recipe_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="RecipeName" />
 
      </LinearLayout>
-     -->
 
 
 </android.support.v7.widget.CardView>
