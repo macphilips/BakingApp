@@ -41,7 +41,6 @@ public class RecipeStepFragment extends Fragment {
     @BindView(R.id.pager_indicator)
     TextView indicator;
 
-
     @BindView(R.id.video_player_container)
     View container;
 

@@ -5,18 +5,27 @@
     android:orientation="vertical"
     android:weightSum="1">
 
-    <com.rmhub.bakingapp.ui.views.SimpleExoPlayerView
-        android:id="@+id/video_player"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5" />
-    <include layout="@layout/recipe_details_desc_steps" />
+        android:layout_weight="0.6">
 
-    <Button
-        android:id="@+id/picker_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="25dp"
-        android:text="video Picker" />
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:id="@+id/video_player"
+            android:background="#000000"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/no_video_text"
+            style="@style/BakingAppText.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/no_video_available"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+    </FrameLayout>
+    <include layout="@layout/recipe_details_desc_steps" />
 </LinearLayout>

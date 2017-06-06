@@ -16,6 +16,7 @@ import com.android.volley.VolleyError;
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.util.NetworkUtil;
+import com.rmhub.bakingapp.util.ProviderUtil;
 import com.rmhub.bakingapp.util.RecipeRequest;
 
 import java.util.List;
@@ -113,6 +114,7 @@ public class Home extends AppCompatActivity {
             public void onResponse(List<Recipe> response) {
                 hideProgress();
                 mAdapter.setRecipeList(response);
+                ProviderUtil.getRecipes(Home.this);
             }
 
             @Override

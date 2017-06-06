@@ -24,22 +24,23 @@
     <string name="next_button_content_desc">Next</string>
     <string name="prev_button_content_desc">Previous</string>
 
-    <string name="wel_skip">Skip</string>
-    <string name="wel_done">Done</string>
+    <string name="skip">Skip</string>
+    <string name="done">Done</string>
     <string name="ingredients">Ingredients</string>
 
 
-    <string name="exo_controls_previous_description">Previous track</string>
-    <string name="exo_controls_next_description">Next track</string>
-    <string name="exo_controls_pause_description">Pause</string>
-    <string name="exo_controls_play_description">Play</string>
-    <string name="exo_controls_stop_description">Stop</string>
-    <string name="exo_controls_rewind_description">Rewind</string>
-    <string name="exo_controls_fastforward_description">Fast forward</string>
-    <string name="exo_controls_exit_fullscreen_description">Full Screen</string>
-    <string name="exo_controls_fullscreen_description">Exit Full Screen</string>
-    <string name="exo_more_description">More</string>
-    <string name="exo_retry_description">@string/retry</string>
+    <string name="control_view_previous_description">Previous track</string>
+    <string name="control_view_next_description">Next track</string>
+    <string name="control_view_pause_description">Pause</string>
+    <string name="control_view_play_description">Play</string>
+    <string name="control_view_stop_description">Stop</string>
+    <string name="control_view_rewind_description">Rewind</string>
+    <string name="control_view_fastforward_description">Fast forward</string>
+    <string name="control_view_exit_fullscreen_description">Full Screen</string>
+    <string name="control_view_fullscreen_description">Exit Full Screen</string>
+    <string name="control_view_more_description">More</string>
+    <string name="control_view_retry_description">@string/retry</string>
+
     <string name="none_content_desc" />
     <string name="recipe_name">%s</string>
 
@@ -83,10 +84,8 @@
 
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
     <string name="title_activity_player_test">PlayerTest</string>
-
-    <string name="title_activity_fullscreen">FullscreenActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="no_video_available">No Video Available</string>
+    <string name="empty_recipe_list">No Recipe Available</string>
 
 
 </resources>

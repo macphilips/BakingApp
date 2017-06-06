@@ -1,12 +1,15 @@
 package com.rmhub.bakingapp.model;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import com.rmhub.bakingapp.data.Contract;
 
 import java.util.List;
 
@@ -56,6 +59,24 @@ public class Recipe implements Parcelable {
 
     public Recipe() {
 
+    }
+
+    public static
+    @Nullable
+    Recipe buildFromCursor(Cursor data) {
+        try {
+            Recipe recipe = new Recipe();
+            recipe.setId(data.getInt(data.getColumnIndexOrThrow(Contract.RECIPE.COLUMN_RECIPE_ID)));
+            recipe.setName(data.getString(data.getColumnIndexOrThrow(Contract.RECIPE.COLUMN_RECIPE_NAME)));
+            recipe.setServings(data.getInt(data.getColumnIndexOrThrow(Contract.RECIPE.COLUMN_SERVINGS)));
+            recipe.setImage(data.getString(data.getColumnIndexOrThrow(Contract.RECIPE.COLUMN_IMAGE)));
+            recipe.setSteps(Step.getStepFromJson(data.getString(data.getColumnIndexOrThrow(Contract.RECIPE.COLUMN_STEPS))));
+            recipe.setIngredients(Ingredient.getIngredientsFromJson(data.getString(data.getColumnIndexOrThrow(Contract.RECIPE.COLUMN_INGREDIENTS))));
+            return recipe;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     Recipe(Parcel in) {
@@ -144,5 +165,17 @@ public class Recipe implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Recipe{" +
+                "ingredients=" + ingredients +
+                ", steps=" + steps +
+                ", image='" + image + '\'' +
+                ", id=" + id +
+                ", servings=" + servings +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

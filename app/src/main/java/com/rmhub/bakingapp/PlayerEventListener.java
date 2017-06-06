@@ -1,4 +1,4 @@
-package com.rmhub.bakingapp.ui.views;
+package com.rmhub.bakingapp;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -14,7 +14,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
  * .
  */
 
-class PlayerEventListener implements ExoPlayer.EventListener {
+public class PlayerEventListener implements ExoPlayer.EventListener {
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
 

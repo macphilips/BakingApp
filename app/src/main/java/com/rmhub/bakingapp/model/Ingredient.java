@@ -52,7 +52,16 @@ public class Ingredient implements Parcelable {
         ingredient = in.readString();
     }
 
-    public static List<Recipe> getIngredientsFromJson(String json) {
+    @Override
+    public String toString() {
+        return "Ingredient{" +
+                "measure='" + measure + '\'' +
+                ", ingredient='" + ingredient + '\'' +
+                ", quantity=" + quantity +
+                '}';
+    }
+
+    public static List<Ingredient> getIngredientsFromJson(String json) {
         return new Gson().fromJson(json, new TypeToken<List<Ingredient>>() {
         }.getType());
     }

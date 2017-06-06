@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Must be kept in sync with AspectRatioFrameLayout -->
+    <!-- Must be kept in sync with AspectRatioFrameLayout
     <attr name="resize_mode" format="enum">
         <enum name="fit" value="0" />
         <enum name="fixed_width" value="1" />
         <enum name="fixed_height" value="2" />
         <enum name="fill" value="3" />
-    </attr>
+    </attr>-->
 
-    <!-- Must be kept in sync with SimpleExoPlayerView -->
+    <!-- Must be kept in sync with SimpleExoPlayerView
     <attr name="surface_type" format="enum">
         <enum name="none" value="0" />
         <enum name="surface_view" value="1" />
@@ -21,7 +21,7 @@
     <attr name="player_layout_id" format="reference" />
     <attr name="controller_layout_id" format="reference" />
 
-    <declare-styleable name="SimpleExoPlayerView">
+    <declare-styleable name="MediaPlayerView">
         <attr name="use_artwork" format="boolean" />
         <attr name="default_artwork" format="reference" />
         <attr name="use_controller" format="boolean" />
@@ -58,7 +58,7 @@
         <attr name="buffered_color" format="color" />
         <attr name="unplayed_color" format="color" />
         <attr name="ad_marker_color" format="color" />
-    </declare-styleable>
+    </declare-styleable>-->
 
     <!-- Declare custom theme attributes that allow changing which styles are
          used for button bars depending on the API level.
@@ -68,5 +68,6 @@
         <attr name="metaButtonBarStyle" format="reference" />
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
+
 
 </resources>

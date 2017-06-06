@@ -13,20 +13,21 @@
      limitations under the License.
 -->
 <resources>
+    <!--
 
-    <item name="exo_content_frame" type="id" />
-    <item name="exo_shutter" type="id" />
-    <item name="exo_subtitles" type="id" />
-    <item name="exo_controller_placeholder" type="id" />
-    <item name="exo_overlay" type="id" />
-    <item name="exo_play" type="id" />
-    <item name="exo_pause" type="id" />
-    <item name="exo_duration" type="id" />
-    <item name="exo_position" type="id" />
-    <item name="exo_progress" type="id" />
-    <item name="exo_exit_full_screen" type="id" />
-    <item name="exo_fullscreen" type="id" />
+    <item name="media_player_content_frame" type="id" />
+    <item name="media_player_shutter" type="id" />
+    <item name="media_player_subtitles" type="id" />
+    <item name="media_player_controller_placeholder" type="id" />
+    <item name="media_player_overlay" type="id" />
+    <item name="media_player_play" type="id" />
+    <item name="media_player_pause" type="id" />
+    <item name="media_player_duration" type="id" />
+    <item name="media_player_position" type="id" />
+    <item name="media_player_progress" type="id" />
+    <item name="media_player_exit_full_screen" type="id" />
+    <item name="media_player_fullscreen" type="id" />
     <item name="player_tool_bar_title" type="id" />
     <item name="player_tool_bar_more_button" type="id" />
-
+-->
 </resources>

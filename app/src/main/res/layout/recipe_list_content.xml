@@ -13,6 +13,7 @@
         android:orientation="vertical">
 
         <ImageView
+
             android:id="@+id/recipe_thumbnail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

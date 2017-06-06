@@ -55,6 +55,18 @@ public class NetworkUtil {
         }
         return true;
     }
+    private static boolean isInternetAvailable() {
+        try {
+            Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
+            int returnVal = p1.waitFor();
+            return (returnVal == 0);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+
+    }
 
     public static synchronized NetworkUtil getInstance() {
         if (mInstance == null) {
@@ -82,18 +94,6 @@ public class NetworkUtil {
         return mRequestQueue;
     }
 
-    private static boolean isInternetAvailable() {
-        try {
-            Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
-            int returnVal = p1.waitFor();
-            return (returnVal == 0);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return false;
-
-    }
 
     public static RequestQueue newRequestQueue(Context context) {
         File cacheDir = new File(context.getCacheDir(), DEFAULT_CACHE_DIR);
@@ -116,6 +116,7 @@ public class NetworkUtil {
 
         return queue;
     }
+
     private void addToRequestQueue(RecipeRequest req) {
         getRequestQueue().add(req);
     }

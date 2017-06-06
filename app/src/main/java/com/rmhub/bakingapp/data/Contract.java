@@ -27,14 +27,6 @@ public final class Contract {
         public static final String COLUMN_RECIPE_ID = "id";
         public static final String COLUMN_SERVINGS = "servings";
         public static final String COLUMN_IMAGE = "image";
-        /*public static final ImmutableList<String> QUOTE_COLUMNS = ImmutableList.of(
-                _ID,
-                COLUMN_RECIPE_NAME,
-                COLUMN_INGREDIENTS,
-                COLUMN_STEPS,
-                COLUMN_RECIPE_ID,
-                COLUMN_SERVINGS
-        );*/
 
         public static Uri makeUriForId(int symbol) {
             return URI.buildUpon().appendPath(String.valueOf(symbol)).build();

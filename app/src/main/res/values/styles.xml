@@ -13,17 +13,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="FullscreenTheme" parent="AppTheme">
-        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:windowBackground">@null</item>
-        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
-        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
-    </style>
-
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.Dialog" parent="Theme.AppCompat" />
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat">
+        <item name="colorAccent">@color/progress_indicator</item>
+    </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
@@ -61,46 +55,46 @@
     </style>
 
     <style name="WelcomeScreenDivider.Light">
-        <item name="android:background">@color/wel_divider_color_theme_light</item>
+        <item name="android:background">@color/divider_color_theme_light</item>
     </style>
 
     <style name="WelcomeScreenDivider.Dark">
-        <item name="android:background">@color/wel_divider_color_theme_dark</item>
+        <item name="android:background">@color/divider_color_theme_dark</item>
     </style>
 
 
-    <style name="WelcomeScreenText">
+    <style name="BakingAppText">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:layout_marginRight">@dimen/wel_text_horizontal_margin</item>
         <item name="android:layout_marginLeft">@dimen/wel_text_horizontal_margin</item>
-        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
     </style>
 
-    <style name="WelcomeScreenText.Large">
+    <style name="BakingAppText.Large">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:layout_marginBottom">@dimen/wel_title_bottom_margin</item>
     </style>
 
-    <style name="WelcomeScreenText.Title" parent="WelcomeScreenText.Large">
+
+    <style name="BakingAppText.Title" parent="BakingAppText.Large">
         <item name="android:textSize">@dimen/wel_title_text_size</item>
     </style>
 
-    <style name="WelcomeScreenText.Centered">
+    <style name="BakingAppText.Centered">
         <item name="android:gravity">center_horizontal</item>
     </style>
 
-    <style name="WelcomeScreenText.Large.Centered">
+    <style name="BakingAppText.Large.Centered">
         <item name="android:gravity">center_horizontal</item>
     </style>
 
-    <style name="WelcomeScreenText.Title.Centered">
+    <style name="BakingAppText.Title.Centered">
         <item name="android:gravity">center_horizontal</item>
-
     </style>
 
-    <style name="WelcomeScreenText.Large.Retry">
+    <style name="BakingAppText.Large.Retry">
         <item name="android:text">@string/retry</item>
     </style>
 
@@ -112,75 +106,84 @@
     </style>
 
     <style name="Wel_TransparentActionBar" parent="Base.Widget.AppCompat.ActionBar">
-        <item name="android:background">@color/wel_transparent</item>
+        <item name="android:background">@color/transparent</item>
     </style>
 
-    <style name="WelcomeScreenText.indicator">
+    <style name="BakingAppText.indicator">
 
         <item name="android:textSize">20sp</item>
     </style>
 
 
-    <style name="ExoMediaButton">
+    <style name="MediaButton">
         <item name="android:background">@null</item>
-        <item name="android:layout_width">@dimen/exo_media_button_width</item>
-        <item name="android:layout_height">@dimen/exo_media_button_height</item>
+        <item name="android:layout_width">@dimen/media_button_width</item>
+        <item name="android:layout_height">@dimen/media_button_height</item>
     </style>
 
-    <style name="ExoMediaButton.Previous">
+    <style name="MediaButton.Previous">
         <item name="android:src">@drawable/exo_controls_previous</item>
-        <item name="android:contentDescription">@string/exo_controls_previous_description</item>
+        <item name="android:contentDescription">@string/control_view_previous_description</item>
     </style>
 
-    <style name="ExoMediaButton.Next">
+    <style name="MediaButton.Next">
         <item name="android:src">@drawable/exo_controls_next</item>
-        <item name="android:contentDescription">@string/exo_controls_next_description</item>
+        <item name="android:contentDescription">@string/control_view_next_description</item>
     </style>
 
-    <style name="ExoMediaButton.FastForward">
+    <style name="MediaButton.FastForward">
         <item name="android:src">@drawable/exo_controls_fastforward</item>
-        <item name="android:contentDescription">@string/exo_controls_fastforward_description</item>
+        <item name="android:contentDescription">@string/control_view_fastforward_description</item>
     </style>
 
-    <style name="ExoMediaButton.Rewind">
+    <style name="MediaButton.Rewind">
         <item name="android:src">@drawable/exo_controls_rewind</item>
-        <item name="android:contentDescription">@string/exo_controls_rewind_description</item>
+        <item name="android:contentDescription">@string/control_view_rewind_description</item>
     </style>
 
-    <style name="ExoMediaButton.Play">
+    <style name="MediaButton.Play">
         <item name="android:src">@drawable/exo_controls_play</item>
-        <item name="android:contentDescription">@string/exo_controls_play_description</item>
+        <item name="android:contentDescription">@string/control_view_play_description</item>
     </style>
 
-    <style name="ExoMediaButton.Pause">
+    <style name="MediaButton.Pause">
         <item name="android:src">@drawable/exo_controls_pause</item>
-        <item name="android:contentDescription">@string/exo_controls_pause_description</item>
+        <item name="android:contentDescription">@string/control_view_pause_description</item>
     </style>
 
-    <style name="ExoMediaButton.ExitFullScreen">
+    <style name="MediaButton.ExitFullScreen">
         <item name="android:src">@drawable/ic_fullscreenexit</item>
-        <item name="android:contentDescription">@string/exo_controls_exit_fullscreen_description
+        <item name="android:contentDescription">@string/control_view_exit_fullscreen_description
         </item>
     </style>
 
-    <style name="ExoMediaButton.FullScreen">
+    <style name="MediaButton.FullScreen">
         <item name="android:src">@drawable/ic_fullscreen</item>
-        <item name="android:contentDescription">@string/exo_controls_fullscreen_description</item>
+        <item name="android:contentDescription">@string/control_view_fullscreen_description</item>
     </style>
 
-    <style name="ExoMediaButton.More">
+    <style name="MediaButton.More">
         <item name="android:src">@drawable/ic_more</item>
-        <item name="android:contentDescription">@string/exo_more_description</item>
+        <item name="android:contentDescription">@string/control_view_more_description</item>
     </style>
 
-    <style name="ExoMediaButton.Retry">
+    <style name="MediaButton.Retry">
         <item name="android:src">@drawable/ic_retry_01</item>
-        <item name="android:contentDescription">@string/exo_retry_description</item></style>
+        <item name="android:contentDescription">@string/control_view_retry_description</item>
+    </style>
 
     <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <style name="MediaControllerText">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:textColor">#FFBEBEBE</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
 
 </resources>

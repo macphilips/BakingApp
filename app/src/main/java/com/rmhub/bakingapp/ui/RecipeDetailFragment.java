@@ -8,22 +8,27 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.util.Util;
+import com.rmhub.bakingapp.PlayerEventHandler;
+import com.rmhub.bakingapp.PlayerEventListener;
 import com.rmhub.bakingapp.PlayerTest;
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Step;
-import com.rmhub.bakingapp.ui.views.PlaybackControlView;
-import com.rmhub.bakingapp.ui.views.PlayerEventHandler;
-import com.rmhub.bakingapp.ui.views.SimpleExoPlayerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,9 +40,19 @@ import butterknife.ButterKnife;
  * .
  */
 
-public class RecipeDetailFragment extends Fragment {
+public class RecipeDetailFragment extends Fragment implements View.OnClickListener {
+
     private static final String STEP = "recipe";
-    private static final int PICK_PHOTO_ACTIVITY_REQUEST_CODE = 4;
+
+    @BindView(R.id.no_video_text)
+    TextView noVideo;
+
+    @BindView(R.id.exo_exit_full_screen)
+    View exitFullScreenButton;
+
+    @BindView(R.id.exo_fullscreen)
+    View fullScreenButton;
+
     public static RecipeDetailFragment newInstance(Step item) {
         Bundle arguments = new Bundle();
         arguments.putParcelable(RecipeDetailFragment.STEP, item);
@@ -45,12 +60,15 @@ public class RecipeDetailFragment extends Fragment {
         fragment.setArguments(arguments);
         return fragment;
     }
+
     private static final String TAG = PlayerTest.class.getSimpleName();
     @BindView(R.id.video_player)
     SimpleExoPlayerView playerView;
     @BindView(R.id.steps_desc)
     TextView mStepDesc;
+
     private OnFragmentInteraction mCallBack;
+
     @Nullable
     private PlayerEventHandler mHandler;
 
@@ -67,43 +85,7 @@ public class RecipeDetailFragment extends Fragment {
         return rootView;
     }
 
-    private void setupPlayer(Step item) {
-        mHandler = new PlayerEventHandler(getActivity(), playerView, Uri.parse(item.getVideoURL()));
-
-        //  mHandler = new PlayerEventHandler(getActivity(), playerView, null);
-        playerView.setControlDispatcher(
-                new PlaybackControlView.ControlDispatcher() {
-
-                    @Override
-                    public void changeScreenMode(boolean fullscreen) {
-                        int orientation = getResources().getConfiguration().orientation;
-                        if (fullscreen) {
-                            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                            }
-                        } else {
-                            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public boolean dispatchSetPlayWhenReady(ExoPlayer player, boolean playWhenReady) {
-                        player.setPlayWhenReady(playWhenReady);
-                        keepWakeLock(playWhenReady);
-                        return true;
-                    }
-
-                    @Override
-                    public boolean dispatchSeekTo(ExoPlayer player, int windowIndex, long positionMs) {
-                        player.seekTo(windowIndex, positionMs);
-                        return true;
-                    }
-
-                }
-        );
-    }
+    private boolean isFullScreen;
 
     void keepWakeLock(boolean keepAwake) {
         if (keepAwake) {
@@ -155,17 +137,56 @@ public class RecipeDetailFragment extends Fragment {
         }
     }
 
+    private void setupPlayer(Step item) {
+
+        if (TextUtils.isEmpty(item.getVideoURL())) {
+            noVideo.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        noVideo.setVisibility(View.GONE);
+        mHandler = new PlayerEventHandler(getActivity(), playerView);
+        mHandler.registerControllerToActivity(getActivity());
+        mHandler.addPlayerListener(new PlayerEventListener() {
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                if (playbackState == ExoPlayer.STATE_ENDED && isFullScreen) {
+                    exitFullScreenButton.performClick();
+                }
+                keepWakeLock(playWhenReady);
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.retry_layout, null);
+                playerView.getOverlayFrameLayout().removeAllViews();
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
+                layoutParams.gravity = Gravity.CENTER;
+                view.setLayoutParams(layoutParams);
+                view.findViewById(R.id.retry_button).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mHandler.initializePlayer();
+                    }
+                });
+                playerView.getOverlayFrameLayout().addView(view);
+            }
+        });
+        Uri.parse(item.getVideoURL());
+    }
+
     void setScreenMode(boolean fullscreen) {
-        LinearLayout.LayoutParams mLayoutParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
+        LinearLayout.LayoutParams mLayoutParam;
         if (!fullscreen) {
-            mLayoutParam.weight = 0.5f;
+            mLayoutParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(250));
             mStepDesc.setVisibility(View.VISIBLE);
         } else {
-            mLayoutParam.weight = 1.0f;
+            mLayoutParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
             mStepDesc.setVisibility(View.GONE);
         }
         playerView.setLayoutParams(mLayoutParam);
-        playerView.getController().updateFullScreenControlButton(fullscreen);
         mCallBack.setFullMode(fullscreen);
     }
 
@@ -186,6 +207,20 @@ public class RecipeDetailFragment extends Fragment {
         return (android.provider.Settings.System.getInt(getActivity().getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
     }
 
+    public void changeScreenMode(boolean fullscreen) {
+        int orientation = getResources().getConfiguration().orientation;
+        if (fullscreen) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+        } else {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        }
+        isFullScreen = fullscreen;
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -196,7 +231,26 @@ public class RecipeDetailFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v == fullScreenButton) {
+            fullScreenButton.setVisibility(View.GONE);
+            exitFullScreenButton.setVisibility(View.VISIBLE);
+            changeScreenMode(true);
+        } else if (v == exitFullScreenButton) {
+            exitFullScreenButton.setVisibility(View.GONE);
+            fullScreenButton.setVisibility(View.VISIBLE);
+            changeScreenMode(false);
+        }
+    }
+
     interface OnFragmentInteraction {
         void setFullMode(boolean fullMode);
     }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
 }

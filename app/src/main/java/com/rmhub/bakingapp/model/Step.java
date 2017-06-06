@@ -56,7 +56,18 @@ public class Step implements Parcelable {
         shortDescription = in.readString();
     }
 
-    public static List<Recipe> getStepFromJson(String json) {
+    @Override
+    public String toString() {
+        return "Step{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", videoURL='" + videoURL + '\'' +
+                ", thumbnailURL='" + thumbnailURL + '\'' +
+                ", shortDescription='" + shortDescription + '\'' +
+                '}';
+    }
+
+    public static List<Step> getStepFromJson(String json) {
         return new Gson().fromJson(json, new TypeToken<List<Step>>() {
         }.getType());
     }

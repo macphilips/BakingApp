@@ -11,8 +11,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public class RecipeProvider extends ContentProvider {
-    private static final int MOVIES = 100;
-    private static final int MOVIES_FOR_ID = 101;
+    private static final int RECIPE = 100;
+    private static final int RECIPE_FOR_ID = 101;
 
     private static final UriMatcher uriMatcher = buildUriMatcher();
 
@@ -21,8 +21,8 @@ public class RecipeProvider extends ContentProvider {
     private static UriMatcher buildUriMatcher() {
         UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        matcher.addURI(Contract.AUTHORITY, Contract.PATH_RECIPE, MOVIES);
-        matcher.addURI(Contract.AUTHORITY, Contract.PATH_RECIPE_WITH_ID, MOVIES_FOR_ID);
+        matcher.addURI(Contract.AUTHORITY, Contract.PATH_RECIPE, RECIPE);
+        matcher.addURI(Contract.AUTHORITY, Contract.PATH_RECIPE_WITH_ID, RECIPE_FOR_ID);
 
         return matcher;
     }
@@ -40,7 +40,7 @@ public class RecipeProvider extends ContentProvider {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         switch (uriMatcher.match(uri)) {
-            case MOVIES:
+            case RECIPE:
                 returnCursor = db.query(
                         Contract.PATH_RECIPE,
                         projection,
@@ -52,7 +52,7 @@ public class RecipeProvider extends ContentProvider {
                 );
                 break;
 
-            case MOVIES_FOR_ID:
+            case RECIPE_FOR_ID:
                 returnCursor = db.query(
                         Contract.PATH_RECIPE,
                         projection,
@@ -89,7 +89,7 @@ public class RecipeProvider extends ContentProvider {
         Uri returnUri;
 
         switch (uriMatcher.match(uri)) {
-            case MOVIES:
+            case RECIPE:
                 db.insert(
                         Contract.PATH_RECIPE,
                         null,
@@ -119,7 +119,7 @@ public class RecipeProvider extends ContentProvider {
             selection = "1";
         }
         switch (uriMatcher.match(uri)) {
-            case MOVIES:
+            case RECIPE:
                 rowsDeleted = db.delete(
                         Contract.PATH_RECIPE,
                         selection,
@@ -128,7 +128,7 @@ public class RecipeProvider extends ContentProvider {
 
                 break;
 
-            case MOVIES_FOR_ID:
+            case RECIPE_FOR_ID:
                 String symbol = Contract.RECIPE.getMovieIDFromUri(uri);
                 rowsDeleted = db.delete(
                         Contract.PATH_RECIPE,
@@ -156,7 +156,7 @@ public class RecipeProvider extends ContentProvider {
         int returnUri;
 
         switch (uriMatcher.match(uri)) {
-            case MOVIES_FOR_ID:
+            case RECIPE_FOR_ID:
                 returnUri = db.update(
                         Contract.PATH_RECIPE,
                         values,
@@ -186,7 +186,7 @@ public class RecipeProvider extends ContentProvider {
         Context context;
         switch (uriMatcher.match(uri)) {
 
-            case MOVIES:
+            case RECIPE:
                 returnCount = 0;
                 db.beginTransaction();
                 try {

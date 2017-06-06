@@ -12,7 +12,7 @@
         android:id="@+id/divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/wel_divider_color_theme_light"
+        android:background="@color/divider_color_theme_light"
         android:layout_marginBottom="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
         app:layout_constraintHorizontal_bias="0.0"
@@ -76,7 +76,7 @@
                 style="@style/RecipeDetailButton.Done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/wel_done"
+                android:text="@string/done"
                 android:visibility="gone" />
 
             <ImageButton
