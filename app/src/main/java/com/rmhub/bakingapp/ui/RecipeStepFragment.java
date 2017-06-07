@@ -25,6 +25,7 @@ import butterknife.Optional;
 
 
 public class RecipeStepFragment extends Fragment {
+
     private static final String RECIPE = "recipe";
     private static final String CURRENT_STEP_POSITION = "current_step_position";
 
@@ -153,7 +154,18 @@ public class RecipeStepFragment extends Fragment {
     }
 
     private void attachFragment(Step step) {
-        Fragment fragment = RecipeDetailFragment.newInstance(step);
+        RecipeDetailFragment fragment = RecipeDetailFragment.newInstance(step);
+        fragment.setOnPlaybackComplete(new RecipeDetailFragment.OnPlaybackComplete() {
+            @Override
+            public void prev() {
+
+            }
+
+            @Override
+            public void next() {
+              RecipeStepFragment.this.  next();
+            }
+        });
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager()
                 .beginTransaction();
         int containerViewId;

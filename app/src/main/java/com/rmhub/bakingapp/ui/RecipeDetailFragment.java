@@ -52,6 +52,7 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
 
     @BindView(R.id.exo_fullscreen)
     View fullScreenButton;
+    private Toast mToast;
 
     public static RecipeDetailFragment newInstance(Step item) {
         Bundle arguments = new Bundle();
@@ -90,10 +91,8 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
     void keepWakeLock(boolean keepAwake) {
         if (keepAwake) {
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            Toast.makeText(getActivity(), "Play", Toast.LENGTH_LONG).show();
         } else {
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            Toast.makeText(getActivity(), "Pause", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -127,6 +126,7 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
         }
     }
 
+    private OnPlaybackComplete mComplete;
     @Override
     public void onStop() {
         super.onStop();
@@ -137,43 +137,13 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
         }
     }
 
-    private void setupPlayer(Step item) {
+    void showToast(String msg) {
+        if (mToast != null) {
+            mToast.cancel();
 
-        if (TextUtils.isEmpty(item.getVideoURL())) {
-            noVideo.setVisibility(View.VISIBLE);
-            return;
         }
-
-        noVideo.setVisibility(View.GONE);
-        mHandler = new PlayerEventHandler(getActivity(), playerView);
-        mHandler.registerControllerToActivity(getActivity());
-        mHandler.addPlayerListener(new PlayerEventListener() {
-            @Override
-            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                if (playbackState == ExoPlayer.STATE_ENDED && isFullScreen) {
-                    exitFullScreenButton.performClick();
-                }
-                keepWakeLock(playWhenReady);
-            }
-
-            @Override
-            public void onPlayerError(ExoPlaybackException error) {
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.retry_layout, null);
-                playerView.getOverlayFrameLayout().removeAllViews();
-                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT);
-                layoutParams.gravity = Gravity.CENTER;
-                view.setLayoutParams(layoutParams);
-                view.findViewById(R.id.retry_button).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mHandler.initializePlayer();
-                    }
-                });
-                playerView.getOverlayFrameLayout().addView(view);
-            }
-        });
-        Uri.parse(item.getVideoURL());
+        mToast = Toast.makeText(getContext(), msg, Toast.LENGTH_LONG);
+        mToast.show();
     }
 
     void setScreenMode(boolean fullscreen) {
@@ -251,6 +221,68 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    private void setupPlayer(Step item) {
+
+        if (TextUtils.isEmpty(item.getVideoURL())) {
+            noVideo.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        noVideo.setVisibility(View.GONE);
+        mHandler = new PlayerEventHandler(getActivity(), playerView);
+        mHandler.registerControllerToActivity(getActivity());
+        mHandler.addPlayerListener(new PlayerEventListener() {
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                if (mComplete != null && playbackState == ExoPlayer.STATE_ENDED) mComplete.next();
+
+                if (playbackState == ExoPlayer.STATE_ENDED && isFullScreen) {
+                    exitFullScreenButton.performClick();
+                }
+                keepWakeLock(playWhenReady);
+                String stateMsg = "";
+                if (playbackState == ExoPlayer.STATE_BUFFERING) {
+                    stateMsg = "state Buffering";
+                } else if (playbackState == ExoPlayer.STATE_IDLE) {
+                    stateMsg = "state idle";
+                } else if (playbackState == ExoPlayer.STATE_ENDED) {
+                    stateMsg = "state ended";
+                } else if (playbackState == ExoPlayer.STATE_READY) {
+                    stateMsg = "state ready";
+                }
+                showToast(stateMsg);
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.retry_layout, null);
+                playerView.getOverlayFrameLayout().removeAllViews();
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
+                layoutParams.gravity = Gravity.CENTER;
+                view.setLayoutParams(layoutParams);
+                view.findViewById(R.id.retry_button).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mHandler.initializePlayer();
+                    }
+                });
+                playerView.getOverlayFrameLayout().addView(view);
+            }
+        });
+        mHandler.play(Uri.parse(item.getVideoURL()));
+    }
+
+    public void setOnPlaybackComplete(OnPlaybackComplete mComplete) {
+        this.mComplete = mComplete;
+    }
+
+    interface OnPlaybackComplete {
+        void prev();
+
+        void next();
     }
 
 }

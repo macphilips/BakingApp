@@ -1,17 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2016 The Android Open Source Project
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -22,54 +9,13 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:background="@color/play_control_bg"
-        android:orientation="vertical">
-
-        <ImageButton
-            android:id="@id/player_tool_bar_more_button"
-            style="@style/ExoMediaButton.More"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="15dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@id/player_tool_bar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:includeFontPadding="false"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:textColor="#FFBEBEBE"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="0:23" />
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/play_control_bg"
-        android:layoutDirection="ltr"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="0dp">
 
-        <com.rmhub.bakingapp.ui.views.DefaultTimeBar
+        <com.google.android.exoplayer2.ui.DefaultTimeBar
             android:id="@id/exo_progress"
             android:layout_width="0dp"
             android:layout_height="26dp"
@@ -119,35 +65,20 @@
                 android:id="@id/exo_position"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:textColor="#FFBEBEBE"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                style="@style/MediaControllerText"
                 tools:text="0:23" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:text="/"
-                android:textColor="#FFBEBEBE"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                style="@style/MediaControllerText"
+                android:text="/"  />
 
             <TextView
                 android:id="@id/exo_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:textColor="#FFBEBEBE"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                style="@style/MediaControllerText"
                 tools:text="1:23" />
         </LinearLayout>
 
@@ -166,8 +97,8 @@
             app:layout_constraintTop_toTopOf="@+id/play_pause_container">
 
             <ImageButton
-                android:id="@id/exo_fullscreen"
-                style="@style/ExoMediaButton.FullScreen"
+                android:id="@+id/exo_fullscreen"
+                style="@style/MediaButton.FullScreen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -175,8 +106,8 @@
                 app:srcCompat="@drawable/ic_fullscreen" />
 
             <ImageButton
-                android:id="@id/exo_exit_full_screen"
-                style="@style/ExoMediaButton.ExitFullScreen"
+                android:id="@+id/exo_exit_full_screen"
+                style="@style/MediaButton.ExitFullScreen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

@@ -63,7 +63,6 @@ import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;
 
 public class PlayerEventHandler extends PlayerEventListener implements PlaybackControlView.ControlDispatcher {
 
-
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private static final CookieManager DEFAULT_COOKIE_MANAGER;
     private static final String TAG = "l";
@@ -101,6 +100,9 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
     private PlaybackStateCompat.Builder mStateBuilder;
     private IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private BecomingNoisyReceiver myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
+
+    private boolean isPlaying;
+
     private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         public void onAudioFocusChange(int focusChange) {
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
@@ -112,7 +114,7 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
                         TimeUnit.SECONDS.toMillis(30));
             } else if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT) {
                 // Pause playback
-                shouldPlayMedia(player, false);
+                shouldPlayMedia(false);
             } else if (focusChange == AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
                 // Lower the volume, keep playing
                 currentVolume = player.getVolume();
@@ -265,7 +267,7 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
             player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector);
             player.addListener(this);
             mediaPlayer.setPlayer(player);
-            shouldPlayMedia(player, true);
+            shouldPlayMedia(true);
             addPendListener();
         }
         if (needNewPlayer || needRetrySource) {
@@ -314,8 +316,12 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
         }
     }
 
+    public void pause() {
+
+    }
     public void releasePlayer() {
         if (player != null) {
+            shouldPlayMedia(false);
             updateResumePosition();
             player.release();
             player = null;
@@ -335,7 +341,8 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
         resumePosition = C.TIME_UNSET;
     }
 
-    private void shouldPlayMedia(ExoPlayer player, boolean playWhenReady) {
+    private void shouldPlayMedia(boolean playWhenReady) {
+        if (player == null) return;
         boolean shouldAutoPlay;
         if (playWhenReady) {
             int result = mAudioManager.requestAudioFocus(afChangeListener,
@@ -376,7 +383,6 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-
         if ((playbackState == ExoPlayer.STATE_READY) && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     player.getCurrentPosition(), 1f);
@@ -385,6 +391,13 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
                     player.getCurrentPosition(), 1f);
         }
         mMediaSession.setPlaybackState(mStateBuilder.build());
+
+        if (player.getPlaybackState() == ExoPlayer.STATE_BUFFERING) {
+            mediaPlayer.getOverlayFrameLayout().removeAllViews();
+            mediaPlayer.getOverlayFrameLayout().addView(mProgressBar);
+        } else {
+            mediaPlayer.getOverlayFrameLayout().removeAllViews();
+        }
     }
 
     @Override
@@ -434,20 +447,10 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
         }
     }
 
-    @Override
-    public void onLoadingChanged(boolean isLoading) {
-        if (isLoading && player.getPlaybackState() == ExoPlayer.STATE_IDLE) {
-            mediaPlayer.getOverlayFrameLayout().removeAllViews();
-            mediaPlayer.getOverlayFrameLayout().addView(mProgressBar);
-        } else {
-            mediaPlayer.getOverlayFrameLayout().removeAllViews();
-        }
-    }
 
     @Override
     public boolean dispatchSetPlayWhenReady(ExoPlayer player, boolean playWhenReady) {
-        shouldPlayMedia(player, playWhenReady);
-        Toast.makeText(mContext, "dispatch Called " + player, Toast.LENGTH_LONG).show();
+        shouldPlayMedia(playWhenReady);
         return true;
     }
 
@@ -465,12 +468,12 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
 
         @Override
         public void onPlay() {
-            shouldPlayMedia(player, true);
+            shouldPlayMedia(true);
         }
 
         @Override
         public void onPause() {
-            shouldPlayMedia(player, false);
+            shouldPlayMedia(false);
         }
 
         @Override
@@ -484,7 +487,7 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
         public void onReceive(Context context, Intent intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 // Pause the playback
-                shouldPlayMedia(player, false);
+                shouldPlayMedia(false);
             }
         }
     }
