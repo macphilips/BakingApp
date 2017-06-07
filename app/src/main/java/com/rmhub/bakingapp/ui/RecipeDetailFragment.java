@@ -52,6 +52,7 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
 
     @BindView(R.id.exo_fullscreen)
     View fullScreenButton;
+
     private Toast mToast;
 
     public static RecipeDetailFragment newInstance(Step item) {
@@ -78,6 +79,8 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recipe_pager_item, container, false);
         ButterKnife.bind(this, rootView);
+        fullScreenButton.setOnClickListener(this);
+        exitFullScreenButton.setOnClickListener(this);
         Step item = getArguments().getParcelable(STEP);
         if (item != null) {
             mStepDesc.setText(item.getDescription());
