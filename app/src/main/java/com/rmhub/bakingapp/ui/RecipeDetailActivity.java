@@ -1,5 +1,6 @@
 package com.rmhub.bakingapp.ui;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -53,27 +54,40 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeFra
         attachFragment(step);
     }
 
+    Fragment currentFragment;
+
+    @Override
+    public void onBackPressed() {
+      /*  if (!mTwoPane && currentFragment instanceof RecipeStepFragment) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                    .beginTransaction();
+            fragmentTransaction.remove(currentFragment);
+            fragmentTransaction.commit();
+        } */
+        super.onBackPressed();
+    }
+
     private void attachFragment(Step step) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-                .beginTransaction();
-        int containerViewId;
-        Fragment fragment;
+
         if (!mTwoPane) {
-            fragment = RecipeStepFragment.newInstance(mRecipe, step);
-            fragmentTransaction
-                    .setCustomAnimations(
-                            R.anim.fragment_slide_left_enter,
-                            R.anim.fragment_slide_left_exit,
-                            R.anim.fragment_slide_right_enter,
-                            R.anim.fragment_slide_right_exit)
-                    .addToBackStack(null);
-            containerViewId = R.id.recipe_detail_master;
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(RecipeStepActivity.RECIPE, mRecipe);
+            arguments.putInt(RecipeStepActivity.CURRENT_STEP_POSITION, mRecipe.getSteps().indexOf(step));
+            Intent i = new Intent(this, RecipeStepActivity.class);
+            i.putExtra(RecipeStepActivity.EXTRAS, arguments);
+            overridePendingTransition(R.anim.fragment_slide_left_enter,
+                    R.anim.fragment_slide_left_exit);
+            startActivity(i);
+
         } else {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                    .beginTransaction();
+            int containerViewId;
             containerViewId = R.id.recipe_detail_container;
-            fragment = RecipeDetailFragment.newInstance(step);
+            currentFragment = RecipeDetailFragment.newInstance(step);
+            fragmentTransaction.replace(containerViewId, currentFragment);
+            fragmentTransaction.commit();
         }
-        fragmentTransaction.replace(containerViewId, fragment);
-        fragmentTransaction.commit();
     }
 
     public void toggleHideyBar(boolean toggle) {

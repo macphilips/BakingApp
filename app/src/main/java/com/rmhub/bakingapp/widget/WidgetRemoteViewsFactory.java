@@ -1,7 +1,6 @@
 package com.rmhub.bakingapp.widget;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Binder;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -40,35 +39,19 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
     }
 
-    private boolean isCursorEmpty(Cursor cursor) {
-        if (!cursor.moveToFirst() || cursor.getCount() == 0) {
-            cursor.close();
-            return true;
-        }
-        return false;
-    }
 
     public void onDestroy() {
 
     }
 
-    public int getCount() {
-        int count = 0;
-        if (items != null) {
-            count = items.size();
-        }
-        return count;
-    }
 
     public RemoteViews getViewAt(int position) {
 
         Recipe item = items.get(position);
-        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.item_detail);
+        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item_layout);
+        rv.setTextViewText(R.id.widget_recipe_name, item.getName());
 
-        rv.setTextViewText(R.id.recipe_name, item.getName());
-
-
-      /*  Intent fillInIntent = new Intent();
+        /*  Intent fillInIntent = new Intent();
         fillInIntent.setData(Contract.Quote.makeUriForStock(item.getSymbol()));
         rv.setOnClickFillInIntent(R.id.symbol, fillInIntent);
         rv.setOnClickFillInIntent(R.id.price, fillInIntent);
@@ -85,6 +68,14 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
     public int getViewTypeCount() {
         return 1;
+    }
+
+    public int getCount() {
+        int count = 0;
+        if (items != null) {
+            count = items.size();
+        }
+        return count;
     }
 
     public long getItemId(int position) {

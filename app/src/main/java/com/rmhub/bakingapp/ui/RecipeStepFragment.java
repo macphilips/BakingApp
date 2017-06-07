@@ -3,6 +3,7 @@ package com.rmhub.bakingapp.ui;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Recipe;
@@ -26,8 +28,8 @@ import butterknife.Optional;
 
 public class RecipeStepFragment extends Fragment {
 
-    private static final String RECIPE = "recipe";
-    private static final String CURRENT_STEP_POSITION = "current_step_position";
+    public static final String RECIPE = "recipe";
+    public static final String CURRENT_STEP_POSITION = "current_step_position";
 
 
     @BindView(R.id.button_next)
@@ -44,13 +46,15 @@ public class RecipeStepFragment extends Fragment {
 
     @BindView(R.id.video_player_container)
     View container;
+    @BindView(R.id.bottom_nav)
+    View bottom_nav;
 
     private Step mCurrentStep;
     private Recipe mRecipe;
 
     /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
+     * Mandatory empty constructor for the currentFragment manager to instantiate the
+     * currentFragment (e.g. upon screen orientation changes).
      */
     @SuppressLint("ValidFragment")
     public RecipeStepFragment() {
@@ -153,9 +157,15 @@ public class RecipeStepFragment extends Fragment {
         }
     }
 
+    RecipeDetailFragment mCurrentFragment;
+
     private void attachFragment(Step step) {
-        RecipeDetailFragment fragment = RecipeDetailFragment.newInstance(step);
-        fragment.setOnPlaybackComplete(new RecipeDetailFragment.OnPlaybackComplete() {
+
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = manager
+                .beginTransaction();
+        mCurrentFragment = RecipeDetailFragment.newInstance(step);
+        mCurrentFragment.setOnPlaybackComplete(new RecipeDetailFragment.OnPlaybackComplete() {
             @Override
             public void prev() {
 
@@ -166,11 +176,10 @@ public class RecipeStepFragment extends Fragment {
               RecipeStepFragment.this.  next();
             }
         });
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager()
-                .beginTransaction();
+
         int containerViewId;
         containerViewId = R.id.video_player_container;
-        fragmentTransaction.replace(containerViewId, fragment);
+        fragmentTransaction.replace(containerViewId, mCurrentFragment);
         fragmentTransaction.commit();
         mCurrentStep = step;
         updateIndicator();
@@ -188,4 +197,16 @@ public class RecipeStepFragment extends Fragment {
         return steps.contains(mStep) && steps.indexOf(mStep) > 0;
     }
 
+    @Override
+    public void onDestroy() {
+        Toast.makeText(getContext(), "onDestroy ", Toast.LENGTH_LONG).show();
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        if (mCurrentFragment != null) {
+            FragmentTransaction fragmentTransaction = manager
+                    .beginTransaction();
+            fragmentTransaction.remove(mCurrentFragment);
+            fragmentTransaction.commit();
+        }
+        super.onDestroy();
+    }
 }

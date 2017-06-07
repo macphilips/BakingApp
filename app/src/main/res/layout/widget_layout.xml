@@ -10,11 +10,7 @@
         android:id="@+id/flipper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:autoStart="true"
-        android:flipInterval="5000"
-        android:gravity="center"
-        android:loopViews="true" />
+        android:layout_gravity="center" />
 
     <TextView
         android:id="@+id/empty_view"

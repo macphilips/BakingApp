@@ -41,6 +41,7 @@ public class RecipeDetailListAdapter extends RecyclerView.Adapter<RecyclerView.V
             return new IngredientViewHolder(view);
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_details_desc_steps, parent, false);
+
             return new StepsViewHolder(view);
         }
     }

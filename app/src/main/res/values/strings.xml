@@ -86,6 +86,7 @@
     <string name="title_activity_player_test">PlayerTest</string>
     <string name="no_video_available">No Video Available</string>
     <string name="empty_recipe_list">No Recipe Available</string>
+    <string name="title_activity_recipe_step">RecipeStepActivity</string>
 
 
 </resources>

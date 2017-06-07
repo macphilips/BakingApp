@@ -319,6 +319,7 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
     public void pause() {
 
     }
+
     public void releasePlayer() {
         if (player != null) {
             shouldPlayMedia(false);

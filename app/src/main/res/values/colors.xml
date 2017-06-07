@@ -26,4 +26,5 @@
 
     <color name="black_overlay">#66000000</color>
     <color name="play_control_bg">#75000000</color>
+    <color name="material_green_700">#00c853</color>
 </resources>

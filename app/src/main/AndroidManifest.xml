@@ -15,7 +15,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".ui.RecipeDetailActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
@@ -35,13 +34,7 @@
             android:name=".PlayerTest"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:label="@string/title_activity_player_test"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
             android:name=".data.RecipeProvider"
@@ -67,6 +60,11 @@
                 android:resource="@xml/widget_info" />
         </receiver>
 
+        <activity
+            android:name=".ui.RecipeStepActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:label="@string/title_activity_recipe_step"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

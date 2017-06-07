@@ -5,7 +5,6 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
     android:orientation="vertical">
-
     <TextView
         android:id="@+id/steps_desc"
         android:textSize="14sp"
@@ -13,4 +12,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="Step Short Description" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d2d2d2" />
 </LinearLayout>

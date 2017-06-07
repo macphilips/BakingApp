@@ -18,12 +18,10 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.util.Util;
 import com.rmhub.bakingapp.PlayerEventHandler;
 import com.rmhub.bakingapp.PlayerEventListener;
 import com.rmhub.bakingapp.PlayerTest;
@@ -43,17 +41,24 @@ import butterknife.ButterKnife;
 public class RecipeDetailFragment extends Fragment implements View.OnClickListener {
 
     private static final String STEP = "recipe";
-
+    private static final String TAG = PlayerTest.class.getSimpleName();
     @BindView(R.id.no_video_text)
     TextView noVideo;
-
     @BindView(R.id.exo_exit_full_screen)
     View exitFullScreenButton;
-
+    @BindView(R.id.video_player_container)
+    View container;
     @BindView(R.id.exo_fullscreen)
     View fullScreenButton;
-
-    private Toast mToast;
+    @BindView(R.id.video_player)
+    SimpleExoPlayerView playerView;
+    @BindView(R.id.steps_desc)
+    TextView mStepDesc;
+    private OnFragmentInteraction mCallBack;
+    @Nullable
+    private PlayerEventHandler mHandler;
+    private boolean isFullScreen;
+    private OnPlaybackComplete mComplete;
 
     public static RecipeDetailFragment newInstance(Step item) {
         Bundle arguments = new Bundle();
@@ -62,17 +67,6 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
         fragment.setArguments(arguments);
         return fragment;
     }
-
-    private static final String TAG = PlayerTest.class.getSimpleName();
-    @BindView(R.id.video_player)
-    SimpleExoPlayerView playerView;
-    @BindView(R.id.steps_desc)
-    TextView mStepDesc;
-
-    private OnFragmentInteraction mCallBack;
-
-    @Nullable
-    private PlayerEventHandler mHandler;
 
     @Nullable
     @Override
@@ -89,8 +83,6 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
         return rootView;
     }
 
-    private boolean isFullScreen;
-
     void keepWakeLock(boolean keepAwake) {
         if (keepAwake) {
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -100,54 +92,23 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (Util.SDK_INT > 23) {
-            if (mHandler != null) {
-                mHandler.initializePlayer();
-            }
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        if ((Util.SDK_INT <= 23)) {
-            if (mHandler != null) {
-                mHandler.initializePlayer();
-            }
+        if (mHandler != null) {
+            mHandler.initializePlayer();
         }
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (Util.SDK_INT <= 23) {
-            if (mHandler != null) {
-                mHandler.releasePlayer();
-            }
+
+        if (mHandler != null) {
+            mHandler.releasePlayer();
         }
     }
 
-    private OnPlaybackComplete mComplete;
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (Util.SDK_INT > 23) {
-            if (mHandler != null) {
-                mHandler.releasePlayer();
-            }
-        }
-    }
-
-    void showToast(String msg) {
-        if (mToast != null) {
-            mToast.cancel();
-
-        }
-        mToast = Toast.makeText(getContext(), msg, Toast.LENGTH_LONG);
-        mToast.show();
-    }
 
     void setScreenMode(boolean fullscreen) {
         LinearLayout.LayoutParams mLayoutParam;
@@ -159,7 +120,7 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
                     ViewGroup.LayoutParams.MATCH_PARENT);
             mStepDesc.setVisibility(View.GONE);
         }
-        playerView.setLayoutParams(mLayoutParam);
+        container.setLayoutParams(mLayoutParam);
         mCallBack.setFullMode(fullscreen);
     }
 
@@ -217,10 +178,6 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
         }
     }
 
-    interface OnFragmentInteraction {
-        void setFullMode(boolean fullMode);
-    }
-
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
@@ -245,17 +202,6 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
                     exitFullScreenButton.performClick();
                 }
                 keepWakeLock(playWhenReady);
-                String stateMsg = "";
-                if (playbackState == ExoPlayer.STATE_BUFFERING) {
-                    stateMsg = "state Buffering";
-                } else if (playbackState == ExoPlayer.STATE_IDLE) {
-                    stateMsg = "state idle";
-                } else if (playbackState == ExoPlayer.STATE_ENDED) {
-                    stateMsg = "state ended";
-                } else if (playbackState == ExoPlayer.STATE_READY) {
-                    stateMsg = "state ready";
-                }
-                showToast(stateMsg);
             }
 
             @Override
@@ -280,6 +226,10 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
 
     public void setOnPlaybackComplete(OnPlaybackComplete mComplete) {
         this.mComplete = mComplete;
+    }
+
+    interface OnFragmentInteraction {
+        void setFullMode(boolean fullMode);
     }
 
     interface OnPlaybackComplete {
