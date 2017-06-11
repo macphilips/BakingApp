@@ -79,7 +79,7 @@ public class Recipe implements Parcelable {
         return null;
     }
 
-    Recipe(Parcel in) {
+    public Recipe(Parcel in) {
         ingredients = in.createTypedArrayList(Ingredient.CREATOR);
         steps = in.createTypedArrayList(Step.CREATOR);
         image = in.readString();

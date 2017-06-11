@@ -8,11 +8,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.model.Step;
+import com.rmhub.bakingapp.ui.fragments.RecipeDetailFragment;
+import com.rmhub.bakingapp.ui.fragments.RecipeFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,6 +26,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeFra
 
     public static final String RECIPE = "recipe";
     public static final String EXTRAS = "extras";
+    public static final String TAG = RecipeDetailActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -29,24 +34,45 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeFra
     private Recipe mRecipe;
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
 
         mRecipe = getIntent().getBundleExtra(EXTRAS).getParcelable(RECIPE);
 
         if (findViewById(R.id.recipe_detail_container) != null) {
             mTwoPane = true;
         }
-
+        setupActionBar();
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.recipe_detail_master, RecipeFragment.newInstance(mRecipe))
                 .commit();
+        if (mRecipe != null && getSupportActionBar() != null) {
+            Log.e(TAG, "Setting title " + mRecipe.getName());
+            getSupportActionBar().setTitle(mRecipe.getName());
+        }
+    }
 
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null && !mTwoPane) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -75,10 +101,9 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeFra
             arguments.putInt(RecipeStepActivity.CURRENT_STEP_POSITION, mRecipe.getSteps().indexOf(step));
             Intent i = new Intent(this, RecipeStepActivity.class);
             i.putExtra(RecipeStepActivity.EXTRAS, arguments);
+            startActivity(i);
             overridePendingTransition(R.anim.fragment_slide_left_enter,
                     R.anim.fragment_slide_left_exit);
-            startActivity(i);
-
         } else {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager()
                     .beginTransaction();

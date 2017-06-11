@@ -3,8 +3,8 @@ package com.rmhub.bakingapp.util;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v4.content.ContentResolverCompat;
-import android.util.Log;
 
 import com.rmhub.bakingapp.BakingApp;
 import com.rmhub.bakingapp.data.Contract;
@@ -24,30 +24,36 @@ public class ProviderUtil {
     public static boolean insertRecipes(List<Recipe> details) {
         List<ContentValues> movieCVs = new ArrayList<>();
         for (Recipe movieDetails : details) {
-
             ContentValues movieCV = new ContentValues();
-
             movieCV.put(Contract.RECIPE.COLUMN_RECIPE_ID, movieDetails.getId());
-
             movieCV.put(Contract.RECIPE.COLUMN_RECIPE_NAME, movieDetails.getName());
-
             movieCV.put(Contract.RECIPE.COLUMN_INGREDIENTS, movieDetails.getIngredientsJsonString());
-
             movieCV.put(Contract.RECIPE.COLUMN_SERVINGS, movieDetails.getServings());
-
             movieCV.put(Contract.RECIPE.COLUMN_IMAGE, movieDetails.getImage());
-
             movieCV.put(Contract.RECIPE.COLUMN_STEPS, movieDetails.getStepsJsonString());
-
             movieCVs.add(movieCV);
         }
 
         int result = BakingApp.getInstance().getContentResolver()
-                .bulkInsert(
-                        Contract.RECIPE.URI,
+                .bulkInsert(Contract.RECIPE.URI,
                         movieCVs.toArray(new ContentValues[movieCVs.size()]));
         return result > 0;
 
+    }
+
+    public static Recipe getRecipeByID(Context context, Uri id) {
+        Cursor cursor = ContentResolverCompat.query(context.getContentResolver(),
+                id,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if (cursor == null || isCursorEmpty(cursor)) {
+            return null;
+        }
+        return Recipe.buildFromCursor(cursor);
     }
 
     public static ArrayList<Recipe> getRecipes(Context context) {
@@ -66,7 +72,6 @@ public class ProviderUtil {
         cursor.moveToFirst();
         while (true) {
             Recipe emp = Recipe.buildFromCursor(cursor);
-            Log.d(ProviderUtil.class.getSimpleName(), String.valueOf(emp));
             arrayList.add(emp);
             if (!cursor.moveToNext())
                 break;

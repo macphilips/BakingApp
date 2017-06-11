@@ -1,6 +1,9 @@
-package com.rmhub.bakingapp.ui;
+package com.rmhub.bakingapp.ui.adapters;
 
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +13,7 @@ import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Ingredient;
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.model.Step;
+import com.rmhub.bakingapp.ui.fragments.RecipeFragment;
 
 import java.util.Locale;
 
@@ -33,7 +37,6 @@ public class RecipeDetailListAdapter extends RecyclerView.Adapter<RecyclerView.V
         mValues = items;
     }
 
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == INGREDIENTS) {
@@ -50,21 +53,12 @@ public class RecipeDetailListAdapter extends RecyclerView.Adapter<RecyclerView.V
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof IngredientViewHolder) {
             IngredientViewHolder ingredientHolder = (IngredientViewHolder) holder;
-            StringBuilder builder = new StringBuilder();
-            int i = 0;
-            for (Ingredient ingredient : mValues.getIngredients()) {
-                String s = String.format(Locale.getDefault(), "%s %s of %s",
-                        ingredient.getQuantity(), ingredient.getMeasure(), ingredient.getIngredient());
-                ++i;
-                if (i == mValues.getIngredients().size() - 1) {
-                    builder.append(s).append(", \nand");
-                } else if (i == mValues.getIngredients().size()) {
-                    builder.append(s).append(".");
-                } else {
-                    builder.append(s).append(", \n");
-                }
+            String text = "<h1>Ingredients</h1><p>" + getIngredientText() + "</p>";
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                ingredientHolder.mContentView.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT));
+            } else {
+                ingredientHolder.mContentView.setText(Html.fromHtml(text));
             }
-            ingredientHolder.mContentView.setText(builder.toString());
         } else {
             StepsViewHolder stepsViewHolder = (StepsViewHolder) holder;
             final Step step = mValues.getSteps().get(position - 1);
@@ -82,6 +76,22 @@ public class RecipeDetailListAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
+    private String getIngredientText() {
+        StringBuilder builder = new StringBuilder();
+        int i = 0;
+        for (Ingredient ingredient : mValues.getIngredients()) {
+            String s = String.format(Locale.getDefault(), "%d. %s %s of %s", ++i,
+                    ingredient.getQuantity(), ingredient.getMeasure(), ingredient.getIngredient());
+            if (i <= mValues.getIngredients().size() - 1) {
+                builder.append(s).append(".<br/>");
+            } else {
+                builder.append(s).append(".");
+            }
+        }
+        Log.d(RecipeDetailListAdapter.class.getSimpleName(), builder.toString());
+        return builder.toString();
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (position == 0) {
@@ -95,7 +105,7 @@ public class RecipeDetailListAdapter extends RecyclerView.Adapter<RecyclerView.V
         return mValues.getSteps().size() + 1;
     }
 
-     void setListener(RecipeFragment.OnFragmentInteractionListener listener) {
+    public void setListener(RecipeFragment.OnFragmentInteractionListener listener) {
         this.mListener = listener;
     }
 

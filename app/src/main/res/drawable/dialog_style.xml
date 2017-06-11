@@ -1,0 +1,11 @@
+<shape android:shape="rectangle"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <Stroke
+        android:startColor="@color/grey_900"
+        android:endColor="@color/grey_900"
+        android:angle="90" />
+
+    <corners android:radius="5dip" />
+
+
+</shape>

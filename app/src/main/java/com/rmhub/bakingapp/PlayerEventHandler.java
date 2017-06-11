@@ -12,6 +12,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -413,6 +414,7 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
 
     @Override
     public void onPlayerError(ExoPlaybackException e) {
+        Log.e(TAG, "onPlayerError called => " + String.valueOf(e.getMessage()));
         String errorString = null;
         if (e.type == ExoPlaybackException.TYPE_RENDERER) {
             Exception cause = e.getRendererException();

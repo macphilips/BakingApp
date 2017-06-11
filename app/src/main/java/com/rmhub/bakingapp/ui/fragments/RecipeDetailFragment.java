@@ -1,4 +1,4 @@
-package com.rmhub.bakingapp.ui;
+package com.rmhub.bakingapp.ui.fragments;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.util.Util;
 import com.rmhub.bakingapp.PlayerEventHandler;
 import com.rmhub.bakingapp.PlayerEventListener;
 import com.rmhub.bakingapp.PlayerTest;
@@ -92,20 +93,42 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            if (mHandler != null) {
+                mHandler.initializePlayer();
+            }
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        if (mHandler != null) {
-            mHandler.initializePlayer();
+        if (Util.SDK_INT <= 23) {
+            if (mHandler != null) {
+                mHandler.initializePlayer();
+            }
         }
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if (Util.SDK_INT <= 23) {
+            if (mHandler != null) {
+                mHandler.releasePlayer();
+            }
+        }
+    }
 
-        if (mHandler != null) {
-            mHandler.releasePlayer();
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23) {
+            if (mHandler != null) {
+                mHandler.releasePlayer();
+            }
         }
     }
 
@@ -228,11 +251,11 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
         this.mComplete = mComplete;
     }
 
-    interface OnFragmentInteraction {
+    public interface OnFragmentInteraction {
         void setFullMode(boolean fullMode);
     }
 
-    interface OnPlaybackComplete {
+    public interface OnPlaybackComplete {
         void prev();
 
         void next();

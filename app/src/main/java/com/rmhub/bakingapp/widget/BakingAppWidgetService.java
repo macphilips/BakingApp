@@ -10,8 +10,8 @@ import android.widget.RemoteViewsService;
  * .
  */
 
-public class StockHawkWidgetService extends RemoteViewsService {
-    public StockHawkWidgetService() {
+public class BakingAppWidgetService extends RemoteViewsService {
+    public BakingAppWidgetService() {
     }
 
     @Override

@@ -27,7 +27,6 @@ public class RecipeRequest extends Request<List<Recipe>> {
 
     RecipeRequest(MovieRequestListener listener) {
         super(Method.GET, (NetworkUtil.QUERY_URL), listener);
-        Log.d(getClass().getSimpleName(), "http requestUrl - " + (NetworkUtil.QUERY_URL));
         this.listener = listener;
     }
 
@@ -35,7 +34,6 @@ public class RecipeRequest extends Request<List<Recipe>> {
     protected Response<List<Recipe>> parseNetworkResponse(NetworkResponse response) {
         try {
             String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-            Log.d(TAG, "response => " + json);
             List<Recipe> obj = Recipe.getRecipeFromJson(json);
             ProviderUtil.insertRecipes(obj);
             return Response.success(obj, HttpHeaderParser.parseCacheHeaders(response));

@@ -1,4 +1,4 @@
-package com.rmhub.bakingapp.ui;
+package com.rmhub.bakingapp.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;

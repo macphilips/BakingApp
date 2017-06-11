@@ -11,7 +11,6 @@ import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
 
 import com.rmhub.bakingapp.R;
-import com.rmhub.bakingapp.ui.Home;
 
 
 /**
@@ -21,7 +20,7 @@ import com.rmhub.bakingapp.ui.Home;
  * .
  */
 
-public class StockHawkWidgetProvider extends AppWidgetProvider {
+public class BakingAppWidgetProvider extends AppWidgetProvider {
 
     private static final String ACTION_DATA_UPDATED = "data_update";
     private static final String LAUNCH_HOME = "home";
@@ -32,7 +31,7 @@ public class StockHawkWidgetProvider extends AppWidgetProvider {
         String action = intent.getAction();
         if (action.equals(ACTION_DATA_UPDATED)) {
             AppWidgetManager manager = AppWidgetManager.getInstance(context);
-            ComponentName thisWidget = new ComponentName(context, StockHawkWidgetProvider.class);
+            ComponentName thisWidget = new ComponentName(context, BakingAppWidgetProvider.class);
             int[] allWidgetIds = manager.getAppWidgetIds(thisWidget);
             manager.notifyAppWidgetViewDataChanged(allWidgetIds, R.id.flipper);
         }
@@ -44,11 +43,11 @@ public class StockHawkWidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
                          int[] appWidgetIds) {
         // Get all ids
-        ComponentName thisWidget = new ComponentName(context, StockHawkWidgetProvider.class);
+        ComponentName thisWidget = new ComponentName(context, BakingAppWidgetProvider.class);
         int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
         for (int widgetId : allWidgetIds) {
 
-            Intent intent = new Intent(context, StockHawkWidgetService.class);
+            Intent intent = new Intent(context, BakingAppWidgetService.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
@@ -57,7 +56,7 @@ public class StockHawkWidgetProvider extends AppWidgetProvider {
             rv.setRemoteAdapter(R.id.flipper, intent);
             rv.setEmptyView(R.id.flipper, R.id.empty_view);
 
-            Intent launchGraph = new Intent(context, Home.class);
+            Intent launchGraph = new Intent(context, IngredientDetails.class);
             launchGraph.setAction(LAUNCH_HOME);
             PendingIntent pendingIntent = TaskStackBuilder.create(context)
                     .addNextIntentWithParentStack(launchGraph)

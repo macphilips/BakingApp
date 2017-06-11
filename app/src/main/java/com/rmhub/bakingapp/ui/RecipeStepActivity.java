@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.model.Step;
+import com.rmhub.bakingapp.ui.fragments.RecipeDetailFragment;
 
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +46,8 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
     TextView indicator;
     @BindView(R.id.video_player_container)
     View container;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     @BindView(R.id.bottom_nav)
     View bottom_nav;
     RecipeDetailFragment mCurrentFragment;
@@ -53,6 +57,16 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
 
     private Handler mHandler = new Handler();
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     private Runnable mDelayedStopRunnable = new Runnable() {
         @Override
         public void run() {
@@ -94,8 +108,8 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_step);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setupActionBar();
         Bundle bundleExtra = getIntent().getBundleExtra(EXTRAS);
         mRecipe = bundleExtra.getParcelable(RECIPE);
 
@@ -107,6 +121,13 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
 
     }
 
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null && !getResources().getBoolean(R.bool.tablet)) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
     public void toggleHideyBar(boolean toggle) {
         // The UI options currently enabled are represented by a bitfield.
         // getSystemUiVisibility() gives us that bitfield.
@@ -257,6 +278,10 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
         updateIndicator();
         hideOrShowPreviousButton(mCurrentStep);
         hideOrShowNextButton(mCurrentStep);
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setTitle(step.getShortDescription());
+        }
     }
 
     public boolean canScrollToNextStep(Step mStep) {

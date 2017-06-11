@@ -1,11 +1,13 @@
 package com.rmhub.bakingapp.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Binder;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.rmhub.bakingapp.R;
+import com.rmhub.bakingapp.data.Contract;
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.util.ProviderUtil;
 
@@ -51,12 +53,11 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item_layout);
         rv.setTextViewText(R.id.widget_recipe_name, item.getName());
 
-        /*  Intent fillInIntent = new Intent();
-        fillInIntent.setData(Contract.Quote.makeUriForStock(item.getSymbol()));
-        rv.setOnClickFillInIntent(R.id.symbol, fillInIntent);
-        rv.setOnClickFillInIntent(R.id.price, fillInIntent);
-        rv.setOnClickFillInIntent(R.id.change, fillInIntent);
-*/
+        Intent fillInIntent = new Intent();
+        fillInIntent.setData(Contract.RECIPE.makeUriForId(item.getId()));
+        rv.setOnClickFillInIntent(R.id.widget_item_list_container, fillInIntent);
+        //  rv.setOnClickFillInIntent(R.id.price, fillInIntent);
+        // rv.setOnClickFillInIntent(R.id.change, fillInIntent);
         return rv;
     }
 

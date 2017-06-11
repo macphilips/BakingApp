@@ -10,13 +10,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Recipe;
+import com.rmhub.bakingapp.ui.adapters.RecipeListAdapter;
 import com.rmhub.bakingapp.util.NetworkUtil;
-import com.rmhub.bakingapp.util.ProviderUtil;
 import com.rmhub.bakingapp.util.RecipeRequest;
 
 import java.util.List;
@@ -30,7 +29,10 @@ public class Home extends AppCompatActivity {
     RecipeListAdapter mAdapter;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.empty_view)
+    View empty_view;
     private ProgressDialog progress;
+    private boolean recipeAvail = false;
 
     void showProgress() {
         if (progress == null) {
@@ -47,6 +49,7 @@ public class Home extends AppCompatActivity {
             progress = null;
         }
     }
+
 
     @Override
     protected void onPause() {
@@ -113,15 +116,20 @@ public class Home extends AppCompatActivity {
             @Override
             public void onResponse(List<Recipe> response) {
                 hideProgress();
+                if (response.isEmpty()) {
+                    empty_view.setVisibility(View.VISIBLE);
+                } else {
+                    recipeAvail = true;
+                    empty_view.setVisibility(View.GONE);
+                }
                 mAdapter.setRecipeList(response);
-                ProviderUtil.getRecipes(Home.this);
             }
 
             @Override
             public void onErrorResponse(VolleyError error) {
                 super.onErrorResponse(error);
                 hideProgress();
-                Toast.makeText(Home.this, String.valueOf(error.getMessage()), Toast.LENGTH_LONG).show();
+                empty_view.setVisibility(View.VISIBLE);
             }
 
 
@@ -129,4 +137,7 @@ public class Home extends AppCompatActivity {
         NetworkUtil.getInstance().fetchResult(requestListener);
     }
 
+    public boolean hasRecipe() {
+        return recipeAvail;
+    }
 }

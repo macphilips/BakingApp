@@ -1,4 +1,4 @@
-package com.rmhub.bakingapp.ui;
+package com.rmhub.bakingapp.ui.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
  * .
  */
 
-class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
+public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
 
     private List<Recipe> mValues;
     private View.OnClickListener listener;
@@ -37,15 +37,15 @@ class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolde
     private int itemHeight;
     private LinearLayout.LayoutParams mImageViewLayoutParams;
 
-    RecipeListAdapter() {
+    public RecipeListAdapter() {
         setImageLayoutSize(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
-    void setListener(View.OnClickListener listener) {
+    public void setListener(View.OnClickListener listener) {
         this.listener = listener;
     }
 
-    void setRecipeList(List<Recipe> list) {
+    public void setRecipeList(List<Recipe> list) {
         mValues = list;
         notifyDataSetChanged();
     }

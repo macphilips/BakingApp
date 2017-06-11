@@ -1,4 +1,4 @@
-package com.rmhub.bakingapp.ui;
+package com.rmhub.bakingapp.ui.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,10 +9,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.model.Step;
+import com.rmhub.bakingapp.ui.adapters.RecipeDetailListAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +31,10 @@ public class RecipeFragment extends Fragment {
 
     @BindView(R.id.item_list)
     RecyclerView recyclerView;
+
+    @BindView(R.id.detail_layout_recipe_name)
+    TextView recipe_name;
+
     private RecipeFragment.OnFragmentInteractionListener mCallback;
 
     public static RecipeFragment newInstance(Recipe recipe) {
@@ -45,9 +51,12 @@ public class RecipeFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.item_list, container, false);
         ButterKnife.bind(this, rootView);
         Recipe item = getArguments().getParcelable(RECIPE);
-        final RecipeDetailListAdapter mAdapter = new RecipeDetailListAdapter(item);
-        recyclerView.setAdapter(mAdapter);
-        mAdapter.setListener(mCallback);
+        if (item != null) {
+            recipe_name.setText(item.getName());
+            final RecipeDetailListAdapter mAdapter = new RecipeDetailListAdapter(item);
+            recyclerView.setAdapter(mAdapter);
+            mAdapter.setListener(mCallback);
+        }
         return rootView;
     }
 
@@ -80,7 +89,7 @@ public class RecipeFragment extends Fragment {
         }
     }
 
-    interface OnFragmentInteractionListener {
+    public interface OnFragmentInteractionListener {
         void onStepItemClicked(Step item);
     }
 }
