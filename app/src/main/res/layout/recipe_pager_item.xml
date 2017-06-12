@@ -25,6 +25,10 @@
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 
+        <FrameLayout
+            android:id="@+id/recipe_thumbnail_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </FrameLayout>
     <include layout="@layout/recipe_details_desc_steps" />
 </LinearLayout>

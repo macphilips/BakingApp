@@ -88,20 +88,17 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
     private Uri linkUri;
     private Handler mainHandler;
     private DataSource.Factory mediaDataSourceFactory;
-    // User controls
     private SimpleExoPlayer player;
-    private float currentVolume = 0.5f;
     private DefaultTrackSelector trackSelector;
-    private boolean needRetrySource;
     private TrackGroupArray lastSeenTrackGroupArray;
-    private int resumeWindow;
-    private long resumePosition;
-    private List<ExoPlayer.EventListener> pending = new ArrayList<>();
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
     private BecomingNoisyReceiver myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
-
+    private List<PlayerEventListener> pendingListener = new ArrayList<>();
+    private float currentVolume = 0.5f;
+    private int resumeWindow;
+    private long resumePosition;
     private boolean isPlaying;
 
     private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
@@ -127,6 +124,7 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
             }
         }
     };
+    private boolean needRetrySource;
 
     public PlayerEventHandler(Context mContext, SimpleExoPlayerView mediaPlayer) {
         this.mContext = mContext;
@@ -140,7 +138,6 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
 
         mProgressBar = new ProgressBar(new ContextThemeWrapper(mContext, R.style.AppTheme_Dialog));
         mProgressBar.setIndeterminate(true);
-
 
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -171,19 +168,19 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
             MediaControllerCompat.setMediaController(activity, mediaController);
     }
 
-    public void addPlayerListener(ExoPlayer.EventListener listener) {
+    public void addPlayerListener(PlayerEventListener listener) {
         if (player != null) {
             player.addListener(listener);
         } else {
-            pending.add(listener);
+            pendingListener.add(listener);
         }
     }
 
     private void addPendListener() {
-        for (ExoPlayer.EventListener listener : pending) {
+        for (PlayerEventListener listener : pendingListener) {
             player.addListener(listener);
         }
-        pending.clear();
+        pendingListener.clear();
     }
 
     public boolean play(Uri linkUri) {
@@ -191,6 +188,7 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
         releasePlayer();
         return initializePlayer();
     }
+
 
     private void initializeMediaSession() {
         // Create a MediaSessionCompat.
@@ -345,21 +343,23 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
 
     private void shouldPlayMedia(boolean playWhenReady) {
         if (player == null) return;
-        boolean shouldAutoPlay;
+        boolean shouldAutoPlay = playWhenReady;
         if (playWhenReady) {
             int result = mAudioManager.requestAudioFocus(afChangeListener,
                     // Use the music stream.
                     AudioManager.STREAM_MUSIC,
                     // Request permanent focus.
                     AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-
-            shouldAutoPlay = (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
+            shouldAutoPlay = isPlaying = (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
             mContext.registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
         } else {
-            shouldAutoPlay = false;
-            mAudioManager.abandonAudioFocus(afChangeListener);
-            mContext.unregisterReceiver(myNoisyAudioStreamReceiver);
+            if (isPlaying) {
+                mAudioManager.abandonAudioFocus(afChangeListener);
+                mContext.unregisterReceiver(myNoisyAudioStreamReceiver);
+                isPlaying = false;
+            }
         }
+
         player.setPlayWhenReady(shouldAutoPlay);
     }
 
@@ -388,9 +388,13 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
         if ((playbackState == ExoPlayer.STATE_READY) && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     player.getCurrentPosition(), 1f);
+
         } else if ((playbackState == ExoPlayer.STATE_READY)) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     player.getCurrentPosition(), 1f);
+
+        } else if (playbackState == ExoPlayer.STATE_ENDED) {
+            isPlaying = false;
         }
         mMediaSession.setPlaybackState(mStateBuilder.build());
 
@@ -462,6 +466,7 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
         player.seekTo(windowIndex, positionMs);
         return true;
     }
+
 
     private class MySessionCallback extends MediaSessionCompat.Callback {
         @Override

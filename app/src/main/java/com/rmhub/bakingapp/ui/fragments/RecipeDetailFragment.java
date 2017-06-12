@@ -16,9 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
@@ -43,23 +47,36 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
 
     private static final String STEP = "recipe";
     private static final String TAG = PlayerTest.class.getSimpleName();
+
     @BindView(R.id.no_video_text)
     TextView noVideo;
+
     @BindView(R.id.exo_exit_full_screen)
     View exitFullScreenButton;
+
     @BindView(R.id.video_player_container)
     View container;
+
     @BindView(R.id.exo_fullscreen)
     View fullScreenButton;
+
     @BindView(R.id.video_player)
     SimpleExoPlayerView playerView;
+
     @BindView(R.id.steps_desc)
     TextView mStepDesc;
+
+    @BindView(R.id.recipe_thumbnail_overlay)
+    FrameLayout overlayFrameLayout;
+
     private OnFragmentInteraction mCallBack;
-    @Nullable
+
     private PlayerEventHandler mHandler;
+
     private boolean isFullScreen;
+
     private OnPlaybackComplete mComplete;
+
 
     public static RecipeDetailFragment newInstance(Step item) {
         Bundle arguments = new Bundle();
@@ -131,7 +148,6 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
             }
         }
     }
-
 
     void setScreenMode(boolean fullscreen) {
         LinearLayout.LayoutParams mLayoutParam;
@@ -244,7 +260,39 @@ public class RecipeDetailFragment extends Fragment implements View.OnClickListen
                 playerView.getOverlayFrameLayout().addView(view);
             }
         });
-        mHandler.play(Uri.parse(item.getVideoURL()));
+        if (!TextUtils.isEmpty(item.getThumbnailURL())) {
+            showLoadThumbnail(item);
+        } else {
+            mHandler.play(Uri.parse(item.getVideoURL()));
+        }
+    }
+
+    public void showLoadThumbnail(final Step item) {
+        final View child = LayoutInflater.from(getContext()).inflate(R.layout.play_button_overlay, null);
+        final ImageView thumbnail = (ImageView) child.findViewById(R.id.recipe_step_thumbnail);
+        ImageButton playButton = (ImageButton) child.findViewById(R.id.play_button);
+
+        Glide
+                .with(getContext())
+                .load(item.getThumbnailURL())
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .fitCenter()
+                .placeholder(R.drawable.ic_picture)
+                .error(R.drawable.ic_picture)
+                .crossFade()
+                .into(thumbnail);
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.play(Uri.parse(item.getVideoURL()));
+
+                overlayFrameLayout.removeAllViews();
+            }
+        });
+
+        overlayFrameLayout.removeAllViews();
+        overlayFrameLayout.addView(child);
     }
 
     public void setOnPlaybackComplete(OnPlaybackComplete mComplete) {

@@ -15,6 +15,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
  */
 
 public class PlayerEventListener implements ExoPlayer.EventListener {
+
+
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
 

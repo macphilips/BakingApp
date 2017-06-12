@@ -1,13 +1,11 @@
 package com.rmhub.bakingapp.widget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
 
 import com.rmhub.bakingapp.R;
@@ -55,13 +53,13 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
                     R.layout.widget_layout);
             rv.setRemoteAdapter(R.id.flipper, intent);
             rv.setEmptyView(R.id.flipper, R.id.empty_view);
-
+/*
             Intent launchGraph = new Intent(context, IngredientDetails.class);
             launchGraph.setAction(LAUNCH_HOME);
             PendingIntent pendingIntent = TaskStackBuilder.create(context)
                     .addNextIntentWithParentStack(launchGraph)
                     .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-            rv.setPendingIntentTemplate(R.id.flipper, pendingIntent);
+            rv.setPendingIntentTemplate(R.id.flipper, pendingIntent);*/
 
             appWidgetManager.updateAppWidget(widgetId, rv);
         }

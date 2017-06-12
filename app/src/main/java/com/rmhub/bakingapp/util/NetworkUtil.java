@@ -60,8 +60,7 @@ public class NetworkUtil {
             Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
             int returnVal = p1.waitFor();
             return (returnVal == 0);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
         return false;
@@ -93,7 +92,6 @@ public class NetworkUtil {
         }
         return mRequestQueue;
     }
-
 
     public static RequestQueue newRequestQueue(Context context) {
         File cacheDir = new File(context.getCacheDir(), DEFAULT_CACHE_DIR);
