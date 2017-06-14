@@ -5,6 +5,7 @@ import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.text.TextUtils;
 
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.model.Step;
@@ -56,33 +57,65 @@ public class HomeTest {
 
                 Thread.sleep(1000);
 
-                onView(withId(R.id.item_list)).perform(RecyclerViewActions.actionOnItemAtPosition(position, click()));
-
                 int i = 0;
                 List<Step> steps = recipes.get(position).getSteps();
                 if (!hasTwoPane) {
-                    Step step = steps.get(0);
+                    Step step1 = steps.get(0);
+
+                    onView(withId(R.id.item_list)).perform(RecyclerViewActions.actionOnItemAtPosition(position, click()));
+
                     onView(withId(R.id.button_prev)).check(matches(not(isDisplayed())));
 
+                    if (TextUtils.isEmpty(step1.getVideoURL())) {
+                        onView(allOf(withId(R.id.no_video_text), withText("No Video Available"), isDisplayed()));
+                    }
+
+                    if (!TextUtils.isEmpty(step1.getThumbnailURL())) {
+                        onView(withId(R.id.recipe_step_thumbnail)).check(matches(isDisplayed()));
+                    }
+
                     ViewInteraction nextButton = onView(withId(R.id.button_next)).check(matches(isDisplayed()));
+
                     nextButton.perform(click());
+
+                    Step step2 = steps.get(1);
+                    if (TextUtils.isEmpty(step2.getVideoURL())) {
+                        onView(allOf(withId(R.id.no_video_text), withText("No Video Available"), isDisplayed()));
+                    }
+
+                    if (!TextUtils.isEmpty(step2.getThumbnailURL())) {
+                        onView(withId(R.id.recipe_step_thumbnail)).check(matches(isDisplayed()));
+                    }
 
                     Thread.sleep(1000);
 
                     ViewInteraction prevButton = onView(withId(R.id.button_prev)).check(matches(isDisplayed()));
                     prevButton.perform(click());
 
-                    onView(allOf(withId(R.id.step_desc), withText(step.getDescription()), isDisplayed()));
+                    onView(allOf(withId(R.id.step_desc), withText(step1.getDescription()), isDisplayed()));
 
                     pressBack();
+
                     onView(withId(R.id.detail_layout_recipe_name)).check(matches(withText(recipes.get(position).getName())));
                     Thread.sleep(1000);
+
                     onView(withId(R.id.item_list)).perform(RecyclerViewActions.actionOnItemAtPosition(steps.size(), click()));
 
                     ViewInteraction doneButton = onView(withId(R.id.button_done)).check(matches(isDisplayed()));
                     doneButton.perform(click());
 
                     onView(withId(R.id.detail_layout_recipe_name)).check(matches(withText(recipes.get(position).getName())));
+
+                } else {
+
+                    onView(withId(R.id.item_list)).perform(RecyclerViewActions.actionOnItemAtPosition(position, click()));
+                    onView(allOf(withId(R.id.step_desc), withText(steps.get(position).getDescription()), isDisplayed()));
+                    Thread.sleep(500);
+                    onView(withId(R.id.item_list)).perform(RecyclerViewActions.actionOnItemAtPosition(steps.size() / 2, click()));
+                    onView(allOf(withId(R.id.step_desc), withText(steps.get(steps.size() / 2).getDescription()), isDisplayed()));
+                    Thread.sleep(500);
+                    onView(withId(R.id.item_list)).perform(RecyclerViewActions.actionOnItemAtPosition(steps.size(), click()));
+                    onView(allOf(withId(R.id.step_desc), withText(steps.get(steps.size()).getDescription()), isDisplayed()));
 
                 }
 
