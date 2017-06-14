@@ -18,7 +18,7 @@
 
     <TextView
         android:layout_marginTop="15dp"
-        android:id="@+id/steps_desc"
+        android:id="@+id/test_layout_steps_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"

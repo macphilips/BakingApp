@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
  * .
  */
 
-public class RecipeFragment extends Fragment {
+public class RecipeDetailsFragment extends Fragment {
     private static final String RECIPE = "recipe";
 
     @BindView(R.id.item_list)
@@ -35,11 +35,11 @@ public class RecipeFragment extends Fragment {
     @BindView(R.id.detail_layout_recipe_name)
     TextView recipe_name;
 
-    private RecipeFragment.OnFragmentInteractionListener mCallback;
+    private RecipeDetailsFragment.OnFragmentInteractionListener mCallback;
 
-    public static RecipeFragment newInstance(Recipe recipe) {
+    public static RecipeDetailsFragment newInstance(Recipe recipe) {
         Bundle args = new Bundle();
-        RecipeFragment fragment = new RecipeFragment();
+        RecipeDetailsFragment fragment = new RecipeDetailsFragment();
         args.putParcelable(RECIPE, recipe);
         fragment.setArguments(args);
         return fragment;
@@ -68,7 +68,7 @@ public class RecipeFragment extends Fragment {
         // the callback interface. If not, it throws an exception
         try {
 
-            mCallback = (RecipeFragment.OnFragmentInteractionListener) activity;
+            mCallback = (RecipeDetailsFragment.OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -82,7 +82,7 @@ public class RecipeFragment extends Fragment {
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = (RecipeFragment.OnFragmentInteractionListener) activity;
+            mCallback = (RecipeDetailsFragment.OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");

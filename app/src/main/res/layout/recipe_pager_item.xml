@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <FrameLayout
@@ -29,6 +30,16 @@
             android:id="@+id/recipe_thumbnail_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+
     </FrameLayout>
-    <include layout="@layout/recipe_details_desc_steps" />
+
+
+    <TextView
+        android:id="@+id/step_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textSize="14sp"
+        tools:text="Step Short Description" />
 </LinearLayout>

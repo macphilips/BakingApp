@@ -18,7 +18,7 @@ class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String movie_table = "CREATE TABLE " + Contract.PATH_RECIPE + " ("
+        String recipe_table = "CREATE TABLE " + Contract.PATH_RECIPE + " ("
                 + Contract.RECIPE.COLUMN_RECIPE_ID + " INTEGER PRIMARY KEY NOT NULL, "
                 + Contract.RECIPE.COLUMN_RECIPE_NAME + " TEXT NOT NULL, "
                 + Contract.RECIPE.COLUMN_INGREDIENTS + " TEXT NOT NULL, "
@@ -26,7 +26,14 @@ class DbHelper extends SQLiteOpenHelper {
                 + Contract.RECIPE.COLUMN_SERVINGS + " TEXT NOT NULL, "
                 + Contract.RECIPE.COLUMN_IMAGE + " TEXT NOT NULL"
                 + ");";
-        db.execSQL(movie_table);
+
+        String recipe_recent_table = "CREATE TABLE " + Contract.PATH_RECIPE_RECENT + " ("
+                + Contract.RECIPE._ID + " INTEGER PRIMARY KEY NOT NULL, "
+                + Contract.RECIPE_RECENT.COLUMN_RECIPE_ID + " INTEGER NULL "
+                + ");";
+
+        db.execSQL(recipe_recent_table);
+        db.execSQL(recipe_table);
     }
 
     @Override

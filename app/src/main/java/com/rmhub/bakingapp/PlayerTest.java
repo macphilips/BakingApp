@@ -40,7 +40,7 @@ public class PlayerTest extends AppCompatActivity {
     SimpleExoPlayerView playerView;
     @BindView(R.id.toolbar)
     Toolbar mToolBar;
-    @BindView(R.id.steps_desc)
+    @BindView(R.id.test_layout_steps_desc)
     TextView mStepDesc;
     @BindView(R.id.picker_button)
     View button;

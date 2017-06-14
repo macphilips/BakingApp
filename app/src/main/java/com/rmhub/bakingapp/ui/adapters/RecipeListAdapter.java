@@ -125,7 +125,6 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
         ViewHolder(View view) {
             super(view);
             container = view;
-
             ButterKnife.bind(this, view);
         }
 

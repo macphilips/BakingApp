@@ -15,13 +15,18 @@ import android.view.View;
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.model.Step;
-import com.rmhub.bakingapp.ui.fragments.RecipeDetailFragment;
-import com.rmhub.bakingapp.ui.fragments.RecipeFragment;
+import com.rmhub.bakingapp.ui.fragments.RecipeDetailsFragment;
+import com.rmhub.bakingapp.ui.fragments.RecipeStepFragment;
+import com.rmhub.bakingapp.util.PrefUtil;
+import com.rmhub.bakingapp.util.ProviderUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecipeDetailActivity extends AppCompatActivity implements RecipeFragment.OnFragmentInteractionListener,RecipeDetailFragment.OnFragmentInteraction {
+import static com.rmhub.bakingapp.widget.BakingAppWidgetProvider.ACTION_DATA_UPDATED;
+import static com.rmhub.bakingapp.widget.BakingAppWidgetProvider.LAUNCH_DETAILS;
+
+public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailsFragment.OnFragmentInteractionListener, RecipeStepFragment.OnFragmentInteraction {
 
 
     public static final String RECIPE = "recipe";
@@ -31,6 +36,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeFra
     Toolbar toolbar;
 
     private boolean mTwoPane;
+
+    public void sendUpdateBroadcast() {
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+        sendBroadcast(dataUpdatedIntent);
+    }
+
     private Recipe mRecipe;
 
     @Override
@@ -43,14 +54,26 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeFra
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public Recipe getRecipe() {
+        return mRecipe;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
-        mRecipe = getIntent().getBundleExtra(EXTRAS).getParcelable(RECIPE);
+        String action = getIntent().getAction();
+        if (action != null && action.equals(LAUNCH_DETAILS)) {
+            mRecipe = getIntent().getParcelableExtra(RECIPE);
+        } else {
+            mRecipe = getIntent().getBundleExtra(EXTRAS).getParcelable(RECIPE);
+            ProviderUtil.saveRecentRecipe(mRecipe);
+            PrefUtil.saveRecentRecipe(mRecipe);
+            sendUpdateBroadcast();
+        }
 
         if (findViewById(R.id.recipe_detail_container) != null) {
             mTwoPane = true;
@@ -58,7 +81,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeFra
         setupActionBar();
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.recipe_detail_master, RecipeFragment.newInstance(mRecipe))
+                .add(R.id.recipe_detail_master, RecipeDetailsFragment.newInstance(mRecipe))
                 .commit();
         if (mRecipe != null && getSupportActionBar() != null) {
             Log.e(TAG, "Setting title " + mRecipe.getName());
@@ -82,16 +105,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeFra
 
     Fragment currentFragment;
 
-    @Override
-    public void onBackPressed() {
-      /*  if (!mTwoPane && currentFragment instanceof RecipeStepFragment) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-                    .beginTransaction();
-            fragmentTransaction.remove(currentFragment);
-            fragmentTransaction.commit();
-        } */
-        super.onBackPressed();
-    }
 
     private void attachFragment(Step step) {
 
@@ -109,7 +122,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeFra
                     .beginTransaction();
             int containerViewId;
             containerViewId = R.id.recipe_detail_container;
-            currentFragment = RecipeDetailFragment.newInstance(step);
+            currentFragment = RecipeStepFragment.newInstance(step);
             fragmentTransaction.replace(containerViewId, currentFragment);
             fragmentTransaction.commit();
         }

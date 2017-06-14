@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/none_content_desc"
-        android:scaleType="centerCrop"
-        tools:src="@drawable/artcover" />
+        android:scaleType="centerCrop" />
 
     <View
         android:layout_width="match_parent"

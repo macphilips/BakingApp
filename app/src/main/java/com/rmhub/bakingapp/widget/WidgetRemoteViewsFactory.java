@@ -1,6 +1,7 @@
 package com.rmhub.bakingapp.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Binder;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -9,11 +10,12 @@ import android.widget.RemoteViewsService;
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Ingredient;
 import com.rmhub.bakingapp.model.Recipe;
-import com.rmhub.bakingapp.ui.adapters.RecipeDetailListAdapter;
+import com.rmhub.bakingapp.util.PrefUtil;
 import com.rmhub.bakingapp.util.ProviderUtil;
 
-import java.util.List;
 import java.util.Locale;
+
+import static com.rmhub.bakingapp.ui.RecipeDetailActivity.RECIPE;
 
 /**
  * Created by MOROLANI on 5/16/2017
@@ -24,12 +26,11 @@ import java.util.Locale;
 
 class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Context mContext;
-    private List<Recipe> items;
+    private Recipe recipe;
 
     WidgetRemoteViewsFactory(Context context) {
         mContext = context;
     }
-
 
     @Override
     public void onCreate() {
@@ -38,11 +39,13 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     @Override
     public void onDataSetChanged() {
         final long identityToken = Binder.clearCallingIdentity();
-        items = ProviderUtil.getRecipes(mContext);
+
+        recipe = PrefUtil.getRecentRecipe(mContext);
+        Log.e(WidgetRemoteViewsFactory.class.getSimpleName(), "From SharedPref => " + String.valueOf(recipe));
+        Log.e(WidgetRemoteViewsFactory.class.getSimpleName(), "From Provider => " + String.valueOf(ProviderUtil.getRecentRecipe(mContext)));
         Binder.restoreCallingIdentity(identityToken);
 
     }
-
 
     public void onDestroy() {
 
@@ -51,30 +54,53 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
     public RemoteViews getViewAt(int position) {
 
-        Recipe item = items.get(position);
-        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item_layout);
-        String text = item.getName() + "\nIngredients:\n\n"
-                + getIngredientText(item);
-        rv.setTextViewText(R.id.widget_recipe_name, text);
-        return rv;
-    }
+        if (position == 0) {
+            final RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item_layout_1);
+            rv.setTextViewText(R.id.recipe_name, recipe.getName());
+            rv.setTextViewText(R.id.recipe_details, "Serve for " + recipe.getServings());
+            /*rv.setInt(R.id.recipe_image, "setBackgroundColor", (ColorGenerator.MATERIAL.getColor(recipe.getName())));
 
-    private String getIngredientText(Recipe mValues) {
-        StringBuilder builder = new StringBuilder();
-        int i = 0;
-        for (Ingredient ingredient : mValues.getIngredients()) {
-            String s = String.format(Locale.getDefault(), "%d. %s %s of %s", ++i,
+            Glide
+                    .with(mContext)
+                    .load(recipe.getImage())
+                    .asBitmap()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .fitCenter()
+                    .placeholder(R.drawable.ic_picture)
+                    .error(R.drawable.ic_picture)
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            rv.setBitmap(R.id.recipe_image, "setImageBitmap", resource);
+                        }
+                    });
+
+            */
+
+            return rv;
+        } else if (position == recipe.getIngredients().size() + 1) {
+            RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item_layout_3);
+            Intent fillInIntent = new Intent();
+            fillInIntent.putExtra(RECIPE, recipe);
+            rv.setOnClickFillInIntent(R.id.show_steps, fillInIntent);
+            return rv;
+        } else {
+            Ingredient ingredient = recipe.getIngredients().get(position - 1);
+            RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item_layout_2);
+            // String recipe_name = item.getName();
+            String text = String.format(Locale.getDefault(), "%d. %s %s of %s", position,
                     ingredient.getQuantity(), ingredient.getMeasure(), ingredient.getIngredient());
+            rv.setTextViewText(R.id.widget_recipe_name, text);
 
-            if (i <= mValues.getIngredients().size() - 1) {
-                builder.append(s).append(".<br/>");
-            } else {
-                builder.append(s).append(".");
-            }
+       /*  int i = 0;
+        for (Ingredient ingredient : item.getIngredients()) {
+
+
+        }*/
+            return rv;
         }
-        Log.d(RecipeDetailListAdapter.class.getSimpleName(), builder.toString());
-        return builder.toString();
     }
+
 
     public RemoteViews getLoadingView() {
         // You can create a custom loading view (for instance when getViewAt() is slow.) If you
@@ -83,13 +109,13 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     }
 
     public int getViewTypeCount() {
-        return 1;
+        return 3;
     }
 
     public int getCount() {
         int count = 0;
-        if (items != null) {
-            count = items.size();
+        if (recipe != null && recipe.getIngredients() != null) {
+            count = recipe.getIngredients().size() + 2;
         }
         return count;
     }

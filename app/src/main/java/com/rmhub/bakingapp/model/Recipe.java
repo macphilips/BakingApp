@@ -11,6 +11,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.rmhub.bakingapp.data.Contract;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,7 +59,8 @@ public class Recipe implements Parcelable {
     private String name;
 
     public Recipe() {
-
+        ingredients = new ArrayList<>();
+        steps = new ArrayList<>();
     }
 
     public static
@@ -91,6 +93,10 @@ public class Recipe implements Parcelable {
     public static List<Recipe> getRecipeFromJson(String json) {
         return new Gson().fromJson(json, new TypeToken<List<Recipe>>() {
         }.getType());
+    }
+
+    public String getJsonString() {
+        return new Gson().toJson(this);
     }
 
 
@@ -170,8 +176,8 @@ public class Recipe implements Parcelable {
     @Override
     public String toString() {
         return "Recipe{" +
-                "ingredients=" + ingredients +
-                ", steps=" + steps +
+                // "ingredients=" + ingredients +
+                // ", steps=" + steps +
                 ", image='" + image + '\'' +
                 ", id=" + id +
                 ", servings=" + servings +

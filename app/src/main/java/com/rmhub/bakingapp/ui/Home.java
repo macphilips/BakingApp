@@ -1,6 +1,8 @@
 package com.rmhub.bakingapp.ui;
 
-import android.app.ProgressDialog;
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ProgressBar;
 
 import com.android.volley.VolleyError;
 import com.rmhub.bakingapp.R;
@@ -31,22 +34,61 @@ public class Home extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.empty_view)
     View empty_view;
-    private ProgressDialog progress;
+    @BindView(R.id.progress_bar)
+    ProgressBar progress;
+    //  private ProgressDialog progress;
     private boolean recipeAvail = false;
 
-    void showProgress() {
-        if (progress == null) {
-            progress = new ProgressDialog(this);
-            progress.setIndeterminate(true);
-            progress.setMessage("Loading");
-        }
-        progress.show();
+    private List<Recipe> recipeList;
+    private boolean isShowing;
+
+    public List<Recipe> getRecipeList() {
+        return recipeList;
     }
 
-    void hideProgress() {
-        if (progress != null && progress.isShowing()) {
-            progress.dismiss();
-            progress = null;
+    void showProgress() {
+        isShowing = true;
+        progress.setVisibility(View.VISIBLE);
+        empty_view.setVisibility(View.GONE);
+    }
+
+    void hideProgress(final boolean success) {
+        if (isShowing) {
+            int width = progress.getWidth();
+            float start = progress.getX();
+            float end = -width;
+            ObjectAnimator animX = ObjectAnimator.ofFloat(progress, "x", start, end);
+            AnimatorSet animSetXY = new AnimatorSet();
+            animSetXY.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    progress.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    progress.setVisibility(View.GONE);
+                    if (success) {
+                        empty_view.setVisibility(View.GONE);
+                    } else {
+
+                        empty_view.setVisibility(View.VISIBLE);
+                    }
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            animSetXY.playTogether(animX);
+            animSetXY.setDuration(500);
+            animSetXY.start();
         }
     }
 
@@ -54,7 +96,6 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        hideProgress();
     }
 
     @Override
@@ -115,21 +156,22 @@ public class Home extends AppCompatActivity {
         RecipeRequest.MovieRequestListener requestListener = new RecipeRequest.MovieRequestListener() {
             @Override
             public void onResponse(List<Recipe> response) {
-                hideProgress();
+
                 if (response.isEmpty()) {
-                    empty_view.setVisibility(View.VISIBLE);
+                    recipeAvail = false;
                 } else {
                     recipeAvail = true;
-                    empty_view.setVisibility(View.GONE);
                 }
+                hideProgress(recipeAvail);
+                recipeList = response;
                 mAdapter.setRecipeList(response);
             }
 
             @Override
             public void onErrorResponse(VolleyError error) {
                 super.onErrorResponse(error);
-                hideProgress();
-                empty_view.setVisibility(View.VISIBLE);
+                hideProgress(false);
+                // empty_view.setVisibility(View.VISIBLE);
             }
 
 

@@ -1,212 +1,318 @@
 package com.rmhub.bakingapp.ui.fragments;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.util.Util;
+import com.rmhub.bakingapp.PlayerEventHandler;
+import com.rmhub.bakingapp.PlayerEventListener;
+import com.rmhub.bakingapp.PlayerTest;
 import com.rmhub.bakingapp.R;
-import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.model.Step;
-
-import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Optional;
 
+/**
+ * Created by MOROLANI on 5/28/2017
+ * <p>
+ * owm
+ * .
+ */
 
-public class RecipeStepFragment extends Fragment {
+public class RecipeStepFragment extends Fragment implements View.OnClickListener {
 
-    public static final String RECIPE = "recipe";
-    public static final String CURRENT_STEP_POSITION = "current_step_position";
+    private static final String STEP = "recipe";
+    private static final String TAG = PlayerTest.class.getSimpleName();
 
+    @BindView(R.id.no_video_text)
+    TextView noVideo;
 
-    @BindView(R.id.button_next)
-    ImageButton next;
-
-    @BindView(R.id.button_prev)
-    ImageButton prev;
-
-    @BindView(R.id.button_done)
-    Button done;
-
-    @BindView(R.id.pager_indicator)
-    TextView indicator;
+    @BindView(R.id.exo_exit_full_screen)
+    View exitFullScreenButton;
 
     @BindView(R.id.video_player_container)
     View container;
-    @BindView(R.id.bottom_nav)
-    View bottom_nav;
 
-    private Step mCurrentStep;
-    private Recipe mRecipe;
+    @BindView(R.id.exo_fullscreen)
+    View fullScreenButton;
 
-    /**
-     * Mandatory empty constructor for the currentFragment manager to instantiate the
-     * currentFragment (e.g. upon screen orientation changes).
-     */
-    @SuppressLint("ValidFragment")
-    public RecipeStepFragment() {
-    }
+    @BindView(R.id.video_player)
+    SimpleExoPlayerView playerView;
 
-    public static Fragment newInstance(Recipe item, Step currentStep) {
+    @BindView(R.id.step_desc)
+    TextView mStepDesc;
+
+    @BindView(R.id.recipe_thumbnail_overlay)
+    FrameLayout overlayFrameLayout;
+
+    private OnFragmentInteraction mCallBack;
+
+    private PlayerEventHandler mHandler;
+
+    private boolean isFullScreen;
+
+    private OnPlaybackComplete mComplete;
+
+    public static RecipeStepFragment newInstance(Step item) {
         Bundle arguments = new Bundle();
-        arguments.putParcelable(RECIPE, item);
-        arguments.putParcelable(CURRENT_STEP_POSITION, currentStep);
+        arguments.putParcelable(RecipeStepFragment.STEP, item);
         RecipeStepFragment fragment = new RecipeStepFragment();
         fragment.setArguments(arguments);
         return fragment;
     }
 
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mRecipe = getArguments().getParcelable(RECIPE);
-
-    }
-
-    void setupSinglePane(Step step) {
-        hideOrShowPreviousButton(step);
-        hideOrShowNextButton(step);
-        if (container != null) attachFragment(step);
-
-    }
-
-    private void updateIndicator() {
-        if (indicator != null) {
-            int totalSteps = mRecipe.getSteps().size();
-            int currentStep = mRecipe.getSteps().indexOf(mCurrentStep) + 1;
-            indicator.setText(String.format(Locale.getDefault(), "%d / %d", currentStep, totalSteps));
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.recipe_detail, container, false);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.recipe_pager_item, container, false);
         ButterKnife.bind(this, rootView);
-        Step mInit = getArguments().getParcelable(CURRENT_STEP_POSITION);
-        setupSinglePane(mInit);
+        fullScreenButton.setOnClickListener(this);
+        exitFullScreenButton.setOnClickListener(this);
+        Step item = getArguments().getParcelable(STEP);
+        if (item != null) {
+            mStepDesc.setText(item.getDescription());
+            setupPlayer(item);
+        }
         return rootView;
     }
 
-    @OnClick(R.id.button_done)
-    void done() {
-        if (done == null) return;
-        getActivity().getSupportFragmentManager().popBackStackImmediate();
-    }
-
-    @OnClick(R.id.button_prev)
-    void previous() {
-        prevButtonClicked(mCurrentStep);
-    }
-
-    private void hideOrShowPreviousButton(Step step) {
-        if (prev == null) return;
-        if (!canScrollToPreviousStep(step)) {
-            prev.setVisibility(View.GONE);
+    void keepWakeLock(boolean keepAwake) {
+        if (keepAwake) {
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
-            prev.setVisibility(View.VISIBLE);
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-    }
-
-    @Optional
-    @OnClick(R.id.button_next)
-    void next() {
-        if (hideOrShowNextButton(mCurrentStep)) return;
-        nextButtonClicked(mCurrentStep);
-    }
-
-    private boolean hideOrShowNextButton(Step step) {
-        if (next == null || done == null) return false;
-        if (!canScrollToNextStep(step)) {
-            next.setVisibility(View.GONE);
-            done.setVisibility(View.VISIBLE);
-            return true;
-        } else {
-            done.setVisibility(View.GONE);
-            next.setVisibility(View.VISIBLE);
-        }
-        return false;
-    }
-
-    public void nextButtonClicked(Step mStep) {
-        if (canScrollToNextStep(mStep)) {
-            List<Step> steps = mRecipe.getSteps();
-            int nextStep = steps.indexOf(mStep) + 1;
-            attachFragment(steps.get(nextStep));
-        }
-    }
-
-    public void prevButtonClicked(Step mStep) {
-        if (canScrollToPreviousStep(mStep)) {
-            List<Step> steps = mRecipe.getSteps();
-            int prevStep = steps.indexOf(mStep) - 1;
-            attachFragment(steps.get(prevStep));
-        }
-    }
-
-    RecipeDetailFragment mCurrentFragment;
-
-    private void attachFragment(Step step) {
-
-        FragmentManager manager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = manager
-                .beginTransaction();
-        mCurrentFragment = RecipeDetailFragment.newInstance(step);
-        mCurrentFragment.setOnPlaybackComplete(new RecipeDetailFragment.OnPlaybackComplete() {
-            @Override
-            public void prev() {
-
-            }
-
-            @Override
-            public void next() {
-              RecipeStepFragment.this.  next();
-            }
-        });
-
-        int containerViewId;
-        containerViewId = R.id.video_player_container;
-        fragmentTransaction.replace(containerViewId, mCurrentFragment);
-        fragmentTransaction.commit();
-        mCurrentStep = step;
-        updateIndicator();
-        hideOrShowPreviousButton(mCurrentStep);
-        hideOrShowNextButton(mCurrentStep);
-    }
-
-    public boolean canScrollToNextStep(Step mStep) {
-        List<Step> steps = mRecipe.getSteps();
-        return steps.contains(mStep) && (steps.indexOf(mStep) < steps.size() - 1);
-    }
-
-    public boolean canScrollToPreviousStep(Step mStep) {
-        List<Step> steps = mRecipe.getSteps();
-        return steps.contains(mStep) && steps.indexOf(mStep) > 0;
     }
 
     @Override
-    public void onDestroy() {
-        Toast.makeText(getContext(), "onDestroy ", Toast.LENGTH_LONG).show();
-        FragmentManager manager = getActivity().getSupportFragmentManager();
-        if (mCurrentFragment != null) {
-            FragmentTransaction fragmentTransaction = manager
-                    .beginTransaction();
-            fragmentTransaction.remove(mCurrentFragment);
-            fragmentTransaction.commit();
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            if (mHandler != null) {
+                mHandler.initializePlayer();
+            }
         }
-        super.onDestroy();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Util.SDK_INT <= 23) {
+            if (mHandler != null) {
+                mHandler.initializePlayer();
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23) {
+            if (mHandler != null) {
+                mHandler.releasePlayer();
+            }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23) {
+            if (mHandler != null) {
+                mHandler.releasePlayer();
+            }
+        }
+    }
+
+    void setScreenMode(boolean fullscreen) {
+        LinearLayout.LayoutParams mLayoutParam;
+        if (!fullscreen) {
+            mLayoutParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(250));
+            mStepDesc.setVisibility(View.VISIBLE);
+        } else {
+            mLayoutParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
+            mStepDesc.setVisibility(View.GONE);
+        }
+        container.setLayoutParams(mLayoutParam);
+        mCallBack.setFullMode(fullscreen);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        int orientation = newConfig.orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setScreenMode(false);
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setScreenMode(true);
+        }
+        if (isAutoRotateOn())
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+
+    boolean isAutoRotateOn() {
+        return (android.provider.Settings.System.getInt(getActivity().getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
+    }
+
+    public void changeScreenMode(boolean fullscreen) {
+        int orientation = getResources().getConfiguration().orientation;
+        if (fullscreen) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+        } else {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        }
+        isFullScreen = fullscreen;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mCallBack = (OnFragmentInteraction) context;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == fullScreenButton) {
+            fullScreenButton.setVisibility(View.GONE);
+            exitFullScreenButton.setVisibility(View.VISIBLE);
+            changeScreenMode(true);
+        } else if (v == exitFullScreenButton) {
+            exitFullScreenButton.setVisibility(View.GONE);
+            fullScreenButton.setVisibility(View.VISIBLE);
+            changeScreenMode(false);
+        }
+    }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    private void setupPlayer(Step item) {
+        if (TextUtils.isEmpty(item.getVideoURL())) {
+            noVideo.setVisibility(View.VISIBLE);
+            /// return;
+        } else {
+            noVideo.setVisibility(View.GONE);
+        }
+
+        mHandler = new PlayerEventHandler(getActivity(), playerView);
+        mHandler.registerControllerToActivity(getActivity());
+        mHandler.addPlayerListener(new PlayerEventListener() {
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                if (mComplete != null && playbackState == ExoPlayer.STATE_ENDED) mComplete.next();
+
+                if (playbackState == ExoPlayer.STATE_ENDED && isFullScreen) {
+                    exitFullScreenButton.performClick();
+                }
+                keepWakeLock(playWhenReady);
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.retry_layout, null);
+                playerView.getOverlayFrameLayout().removeAllViews();
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
+                layoutParams.gravity = Gravity.CENTER;
+                view.setLayoutParams(layoutParams);
+                view.findViewById(R.id.retry_button).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mHandler.initializePlayer();
+                    }
+                });
+                playerView.getOverlayFrameLayout().addView(view);
+            }
+        });
+
+        Log.d(TAG, "Thumbnail URL => " + item.getThumbnailURL());
+
+        if (!TextUtils.isEmpty(item.getThumbnailURL())) {
+            Log.d(TAG, "Thumbnail URL not empty ");
+            showLoadThumbnail(item);
+        } else {
+            mHandler.play(Uri.parse(item.getVideoURL()));
+        }
+    }
+
+    public void showLoadThumbnail(final Step item) {
+
+        final View child = LayoutInflater.from(getContext()).inflate(R.layout.play_button_overlay, null);
+        final ImageView thumbnail = (ImageView) child.findViewById(R.id.recipe_step_thumbnail);
+        ImageButton playButton = (ImageButton) child.findViewById(R.id.play_button);
+
+        Glide
+                .with(getContext())
+                .load(item.getThumbnailURL())
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .fitCenter()
+                .placeholder(R.drawable.ic_picture)
+                .error(R.drawable.ic_picture)
+                .crossFade()
+                .into(thumbnail);
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.play(Uri.parse(item.getVideoURL()));
+                overlayFrameLayout.removeAllViews();
+            }
+        });
+        if (TextUtils.isEmpty(item.getVideoURL())) {
+            playButton.setVisibility(View.GONE);
+        }
+        overlayFrameLayout.removeAllViews();
+        overlayFrameLayout.addView(child);
+    }
+
+    public void setOnPlaybackComplete(OnPlaybackComplete mComplete) {
+        this.mComplete = mComplete;
+    }
+
+    public interface OnFragmentInteraction {
+        void setFullMode(boolean fullMode);
+    }
+
+    public interface OnPlaybackComplete {
+        void prev();
+
+        void next();
+    }
+
 }

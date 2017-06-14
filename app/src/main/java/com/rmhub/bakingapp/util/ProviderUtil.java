@@ -4,7 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContentResolverCompat;
+import android.util.Log;
 
 import com.rmhub.bakingapp.BakingApp;
 import com.rmhub.bakingapp.data.Contract;
@@ -22,22 +24,50 @@ import java.util.List;
 
 public class ProviderUtil {
     public static boolean insertRecipes(List<Recipe> details) {
-        List<ContentValues> movieCVs = new ArrayList<>();
-        for (Recipe movieDetails : details) {
+        List<ContentValues> contentValues = new ArrayList<>();
+        for (Recipe recipe : details) {
             ContentValues movieCV = new ContentValues();
-            movieCV.put(Contract.RECIPE.COLUMN_RECIPE_ID, movieDetails.getId());
-            movieCV.put(Contract.RECIPE.COLUMN_RECIPE_NAME, movieDetails.getName());
-            movieCV.put(Contract.RECIPE.COLUMN_INGREDIENTS, movieDetails.getIngredientsJsonString());
-            movieCV.put(Contract.RECIPE.COLUMN_SERVINGS, movieDetails.getServings());
-            movieCV.put(Contract.RECIPE.COLUMN_IMAGE, movieDetails.getImage());
-            movieCV.put(Contract.RECIPE.COLUMN_STEPS, movieDetails.getStepsJsonString());
-            movieCVs.add(movieCV);
+            movieCV.put(Contract.RECIPE.COLUMN_RECIPE_ID, recipe.getId());
+            movieCV.put(Contract.RECIPE.COLUMN_RECIPE_NAME, recipe.getName());
+            movieCV.put(Contract.RECIPE.COLUMN_INGREDIENTS, recipe.getIngredientsJsonString());
+            movieCV.put(Contract.RECIPE.COLUMN_SERVINGS, recipe.getServings());
+            movieCV.put(Contract.RECIPE.COLUMN_IMAGE, recipe.getImage());
+            movieCV.put(Contract.RECIPE.COLUMN_STEPS, recipe.getStepsJsonString());
+            contentValues.add(movieCV);
         }
 
         int result = BakingApp.getInstance().getContentResolver()
                 .bulkInsert(Contract.RECIPE.URI,
-                        movieCVs.toArray(new ContentValues[movieCVs.size()]));
+                        contentValues.toArray(new ContentValues[contentValues.size()]));
         return result > 0;
+
+    }
+
+    public static void saveRecentRecipe(Recipe recipe) {
+        ContentValues movieCV = new ContentValues();
+        movieCV.put(Contract.RECIPE_RECENT.COLUMN_RECIPE_ID, recipe.getId());
+        BakingApp.getInstance().getContentResolver()
+                .insert(Contract.RECIPE_RECENT.URI, movieCV);
+    }
+
+    @Nullable
+    public static Recipe getRecentRecipe(Context context) {
+        Cursor returnCursor = ContentResolverCompat.query(context.getContentResolver(),
+                Contract.RECIPE_RECENT.URI,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if (returnCursor != null && !isCursorEmpty(returnCursor)) {
+            int recipeID = returnCursor.getInt(returnCursor.getColumnIndexOrThrow(Contract.RECIPE_RECENT.COLUMN_RECIPE_ID));
+            Recipe recipe = getRecipeByID(context, Contract.RECIPE.makeUriForId(recipeID));
+            Log.d(ProviderUtil.class.getSimpleName(), String.valueOf(recipe));
+            returnCursor.close();
+            return recipe;
+        }
+        return null;
 
     }
 

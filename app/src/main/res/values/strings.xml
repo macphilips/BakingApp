@@ -52,6 +52,7 @@
     <string name="title_activity_ingredient_details">IngredientDetails</string>
     <string name="title_activity_recipe_detail">Details</string>
     <string name="title_activity_home">Home</string>
+    <string name="show_steps">Show Steps</string>
 
 
 </resources>

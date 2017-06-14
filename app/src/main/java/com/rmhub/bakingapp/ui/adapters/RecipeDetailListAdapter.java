@@ -13,7 +13,7 @@ import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Ingredient;
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.model.Step;
-import com.rmhub.bakingapp.ui.fragments.RecipeFragment;
+import com.rmhub.bakingapp.ui.fragments.RecipeDetailsFragment;
 
 import java.util.Locale;
 
@@ -31,7 +31,7 @@ public class RecipeDetailListAdapter extends RecyclerView.Adapter<RecyclerView.V
     private static final int INGREDIENTS = 0;
     private static final int STEPS = 1;
     private final Recipe mValues;
-    private RecipeFragment.OnFragmentInteractionListener mListener;
+    private RecipeDetailsFragment.OnFragmentInteractionListener mListener;
 
     public RecipeDetailListAdapter(Recipe items) {
         mValues = items;
@@ -105,7 +105,7 @@ public class RecipeDetailListAdapter extends RecyclerView.Adapter<RecyclerView.V
         return mValues.getSteps().size() + 1;
     }
 
-    public void setListener(RecipeFragment.OnFragmentInteractionListener listener) {
+    public void setListener(RecipeDetailsFragment.OnFragmentInteractionListener listener) {
         this.mListener = listener;
     }
 
@@ -125,14 +125,13 @@ public class RecipeDetailListAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-     class StepsViewHolder extends RecyclerView.ViewHolder {
-
+    class StepsViewHolder extends RecyclerView.ViewHolder {
 
         private final View mView;
-        @BindView(R.id.steps_desc)
+        @BindView(R.id.steps_short_desc)
         TextView short_desc;
 
-         StepsViewHolder(View view) {
+        StepsViewHolder(View view) {
             super(view);
             mView = view;
             ButterKnife.bind(this, view);

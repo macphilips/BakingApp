@@ -9,12 +9,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 public class RecipeProvider extends ContentProvider {
     private static final int RECIPE = 100;
     private static final int RECIPE_FOR_ID = 101;
 
     private static final UriMatcher uriMatcher = buildUriMatcher();
+    private static final int RECIPE_RECENT = 200;
 
     private DbHelper dbHelper;
 
@@ -22,6 +24,7 @@ public class RecipeProvider extends ContentProvider {
         UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         matcher.addURI(Contract.AUTHORITY, Contract.PATH_RECIPE, RECIPE);
+        matcher.addURI(Contract.AUTHORITY, Contract.PATH_RECIPE_RECENT, RECIPE_RECENT);
         matcher.addURI(Contract.AUTHORITY, Contract.PATH_RECIPE_WITH_ID, RECIPE_FOR_ID);
 
         return matcher;
@@ -51,13 +54,25 @@ public class RecipeProvider extends ContentProvider {
                         sortOrder
                 );
                 break;
+            case RECIPE_RECENT:
+                returnCursor = db.query(
+                        Contract.PATH_RECIPE_RECENT,
+                        projection,
+                        Contract.RECIPE_RECENT._ID + " = ?",
+                        new String[]{String.valueOf(RECIPE_RECENT)},
+                        null,
+                        null,
+                        sortOrder
+                );
+
+                break;
 
             case RECIPE_FOR_ID:
                 returnCursor = db.query(
                         Contract.PATH_RECIPE,
                         projection,
                         Contract.RECIPE.COLUMN_RECIPE_ID + " = ?",
-                        new String[]{Contract.RECIPE.getMovieIDFromUri(uri)},
+                        new String[]{Contract.RECIPE.getRecipeWithID(uri)},
                         null,
                         null,
                         sortOrder
@@ -97,6 +112,16 @@ public class RecipeProvider extends ContentProvider {
                 );
                 returnUri = Contract.RECIPE.URI;
                 break;
+            case RECIPE_RECENT:
+                Log.d(RecipeProvider.class.getSimpleName(), "inserting recent into db => " + String.valueOf(values));
+                values.put(Contract.RECIPE_RECENT._ID, RECIPE_RECENT);
+                db.replace(
+                        Contract.PATH_RECIPE_RECENT,
+                        null,
+                        values
+                );
+                returnUri = Contract.RECIPE_RECENT.URI;
+                break;
 
             default:
                 throw new UnsupportedOperationException("Unknown URI:" + uri);
@@ -129,7 +154,7 @@ public class RecipeProvider extends ContentProvider {
                 break;
 
             case RECIPE_FOR_ID:
-                String symbol = Contract.RECIPE.getMovieIDFromUri(uri);
+                String symbol = Contract.RECIPE.getRecipeWithID(uri);
                 rowsDeleted = db.delete(
                         Contract.PATH_RECIPE,
                         '"' + symbol + '"' + " =" + Contract.RECIPE.COLUMN_RECIPE_NAME,

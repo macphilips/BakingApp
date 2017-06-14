@@ -8,6 +8,65 @@
     tools:context="com.rmhub.bakingapp.ui.RecipeStepActivity"
     tools:showIn="@layout/activity_recipe_step">
 
-    <include layout="@layout/recipe_detail" />
+    <FrameLayout
+        android:id="@+id/video_player_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/bottom_nav"
+        android:layout_gravity="bottom"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        tools:background="@color/material_cyan">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/button_prev"
+                style="@style/RecipeDetailButton.Prev"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/prev_button_content_desc" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/pager_indicator"
+            style="@style/RecipeDetailButton.Done"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            tools:text="1/19" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/button_done"
+                style="@style/RecipeDetailButton.Done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/done"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/button_next"
+                style="@style/RecipeDetailButton.Next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/next_button_content_desc" />
+
+        </FrameLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

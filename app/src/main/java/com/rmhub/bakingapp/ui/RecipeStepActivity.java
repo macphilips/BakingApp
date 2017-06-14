@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +21,7 @@ import android.widget.TextView;
 import com.rmhub.bakingapp.R;
 import com.rmhub.bakingapp.model.Recipe;
 import com.rmhub.bakingapp.model.Step;
-import com.rmhub.bakingapp.ui.fragments.RecipeDetailFragment;
+import com.rmhub.bakingapp.ui.fragments.RecipeStepFragment;
 
 import java.util.List;
 import java.util.Locale;
@@ -31,7 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Optional;
 
-public class RecipeStepActivity extends AppCompatActivity implements RecipeDetailFragment.OnFragmentInteraction {
+public class RecipeStepActivity extends AppCompatActivity implements RecipeStepFragment.OnFragmentInteraction {
 
     public static final String EXTRAS = "Extras";
     public static final String RECIPE = "recipe";
@@ -50,23 +51,12 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
     Toolbar toolbar;
     @BindView(R.id.bottom_nav)
     View bottom_nav;
-    RecipeDetailFragment mCurrentFragment;
+    RecipeStepFragment mCurrentFragment;
 
     private Step mCurrentStep;
     private Recipe mRecipe;
 
     private Handler mHandler = new Handler();
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                supportFinishAfterTransition();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
     private Runnable mDelayedStopRunnable = new Runnable() {
         @Override
         public void run() {
@@ -74,7 +64,6 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
             float start = bottom_nav.getY() + height;
             float end = bottom_nav.getY();
             ObjectAnimator animX = ObjectAnimator.ofFloat(bottom_nav, "y", start, end);
-
             AnimatorSet animSetXY = new AnimatorSet();
             animSetXY.addListener(new Animator.AnimatorListener() {
                 @Override
@@ -102,6 +91,18 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
             animSetXY.start();
         }
     };
+    private String thumbnailTest = "https://firebasestorage.googleapis.com/v0/b/sinecera-1.appspot.com/o/eIjDF2jpfCRYsBGshFwjDaNfRKI2%2Fimage%2Fjpeg%2Fartcover.jpg?alt=media&token=3b77ff4f-dd63-4029-8ed6-c62802f3b396";
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +116,11 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
 
         Step mInit = null;
         if (mRecipe != null) {
+            for (Step step : mRecipe.getSteps()) {
+                if (TextUtils.isEmpty(step.getVideoURL())) {
+                    step.setThumbnailURL(thumbnailTest);
+                }
+            }
             mInit = mRecipe.getSteps().get(bundleExtra.getInt(CURRENT_STEP_POSITION));
         }
         setupSinglePane(mInit);
@@ -128,6 +134,7 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
+
     public void toggleHideyBar(boolean toggle) {
         // The UI options currently enabled are represented by a bitfield.
         // getSystemUiVisibility() gives us that bitfield.
@@ -257,8 +264,8 @@ public class RecipeStepActivity extends AppCompatActivity implements RecipeDetai
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = manager
                 .beginTransaction();
-        mCurrentFragment = RecipeDetailFragment.newInstance(step);
-        mCurrentFragment.setOnPlaybackComplete(new RecipeDetailFragment.OnPlaybackComplete() {
+        mCurrentFragment = RecipeStepFragment.newInstance(step);
+        mCurrentFragment.setOnPlaybackComplete(new RecipeStepFragment.OnPlaybackComplete() {
             @Override
             public void prev() {
 

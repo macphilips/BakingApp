@@ -56,6 +56,11 @@ public class Step implements Parcelable {
         shortDescription = in.readString();
     }
 
+    public static List<Step> getStepFromJson(String json) {
+        return new Gson().fromJson(json, new TypeToken<List<Step>>() {
+        }.getType());
+    }
+
     @Override
     public String toString() {
         return "Step{" +
@@ -65,11 +70,6 @@ public class Step implements Parcelable {
                 ", thumbnailURL='" + thumbnailURL + '\'' +
                 ", shortDescription='" + shortDescription + '\'' +
                 '}';
-    }
-
-    public static List<Step> getStepFromJson(String json) {
-        return new Gson().fromJson(json, new TypeToken<List<Step>>() {
-        }.getType());
     }
 
     public String getDescription() {

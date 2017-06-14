@@ -266,7 +266,7 @@ public class PlayerEventHandler extends PlayerEventListener implements PlaybackC
             player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector);
             player.addListener(this);
             mediaPlayer.setPlayer(player);
-            shouldPlayMedia(true);
+            shouldPlayMedia(false);
             addPendListener();
         }
         if (needNewPlayer || needRetrySource) {
